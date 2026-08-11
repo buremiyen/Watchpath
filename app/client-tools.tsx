@@ -1,34 +1,54 @@
 'use client'
-import {useEffect,useMemo,useRef,useState} from 'react'
-import {ArrowRight,Check,Copy,Download,ExternalLink,Languages,Monitor,QrCode,Search,Smartphone,X} from 'lucide-react'
+import {useEffect,useMemo,useState} from 'react'
+import {ArrowRight,Check,Copy,Download,ExternalLink,Languages,Monitor,QrCode,Smartphone,X} from 'lucide-react'
+import {Lang,languages,tx} from './i18n'
 
-type Lang='tr'|'en'|'de'|'es'|'fr'|'ja'
-type Filter='all'|'movie'|'series'|'watched'|'unwatched'
-const langs:{id:Lang;flag:string;name:string}[]=[{id:'tr',flag:'🇹🇷',name:'Türkçe'},{id:'en',flag:'🇬🇧',name:'English'},{id:'de',flag:'🇩🇪',name:'Deutsch'},{id:'es',flag:'🇪🇸',name:'Español'},{id:'fr',flag:'🇫🇷',name:'Français'},{id:'ja',flag:'🇯🇵',name:'日本語'}]
-const ui:Record<Lang,Record<string,string>>={
-tr:{transfer:'Cihaza Aktar',device:'Cihazlar Arası Aktarım',deviceDesc:'Telefon kameranla QR kodunu okut. İzlediğin film ve bölümler telefona taşınır; hesap gerekmez.',copy:'Bağlantıyı kopyala',copied:'Bağlantı kopyalandı ✓',manual:'Manuel içe aktarma',import:'İçe aktar',invalid:'Geçersiz aktarım kodu',note:'Otomatik senkronizasyon değildir. Yeni değişikliklerden sonra tekrar aktarabilirsin.',search:'Yapım ara...',all:'Tümü',movies:'Filmler',series:'Diziler',watched:'İzlenen',unwatched:'İzlenmeyen',creator:'WATCHPATH TARAFINDAN',portfolio:'Portföyü gör',adline:'Grafik Tasarım · 3D · Dijital Deneyimler'},
-en:{transfer:'Transfer',device:'Device Transfer',deviceDesc:'Scan the QR with your phone camera. Watched movies and episodes move to your phone; no account required.',copy:'Copy link',copied:'Link copied ✓',manual:'Manual import',import:'Import',invalid:'Invalid transfer code',note:'This is not automatic sync. Transfer again after new changes.',search:'Search titles...',all:'All',movies:'Movies',series:'Series',watched:'Watched',unwatched:'Unwatched',creator:'WATCHPATH BY',portfolio:'View portfolio',adline:'Graphic Design · 3D · Digital Experiences'},
-de:{transfer:'Übertragen',device:'Geräteübertragung',deviceDesc:'Scanne den QR-Code mit deinem Handy. Dein Fortschritt wird ohne Konto übertragen.',copy:'Link kopieren',copied:'Link kopiert ✓',manual:'Manuell importieren',import:'Importieren',invalid:'Ungültiger Code',note:'Keine automatische Synchronisierung. Nach Änderungen erneut übertragen.',search:'Titel suchen...',all:'Alle',movies:'Filme',series:'Serien',watched:'Gesehen',unwatched:'Ungesehen',creator:'WATCHPATH VON',portfolio:'Portfolio ansehen',adline:'Grafikdesign · 3D · Digitale Erlebnisse'},
-es:{transfer:'Transferir',device:'Transferencia entre dispositivos',deviceDesc:'Escanea el QR con tu teléfono. Tu progreso se transfiere sin necesidad de una cuenta.',copy:'Copiar enlace',copied:'Enlace copiado ✓',manual:'Importación manual',import:'Importar',invalid:'Código no válido',note:'No es sincronización automática. Transfiere de nuevo después de los cambios.',search:'Buscar títulos...',all:'Todos',movies:'Películas',series:'Series',watched:'Vistos',unwatched:'No vistos',creator:'WATCHPATH POR',portfolio:'Ver portafolio',adline:'Diseño Gráfico · 3D · Experiencias Digitales'},
-fr:{transfer:'Transférer',device:'Transfert entre appareils',deviceDesc:'Scanne le QR avec ton téléphone. Ta progression est transférée sans compte.',copy:'Copier le lien',copied:'Lien copié ✓',manual:'Import manuel',import:'Importer',invalid:'Code invalide',note:'Ce n’est pas une synchronisation automatique. Transfère à nouveau après les changements.',search:'Rechercher...',all:'Tous',movies:'Films',series:'Séries',watched:'Vus',unwatched:'Non vus',creator:'WATCHPATH PAR',portfolio:'Voir le portfolio',adline:'Design Graphique · 3D · Expériences Numériques'},
-ja:{transfer:'転送',device:'デバイス間転送',deviceDesc:'スマホのカメラでQRコードを読み取ると、視聴履歴をアカウントなしで転送できます。',copy:'リンクをコピー',copied:'コピーしました ✓',manual:'手動インポート',import:'インポート',invalid:'無効なコードです',note:'自動同期ではありません。変更後は再度転送してください。',search:'作品を検索...',all:'すべて',movies:'映画',series:'シリーズ',watched:'視聴済み',unwatched:'未視聴',creator:'WATCHPATH BY',portfolio:'ポートフォリオ',adline:'グラフィックデザイン · 3D · デジタル体験'}}
-const replacements:Record<Lang,[string,string][]>={
-tr:[],
-en:[['GÜN KALDI','DAYS LEFT'],['MARVEL MARATONUN','YOUR MARVEL MARATHON'],['tamamlandı','complete'],['görev tamamlandı','tasks completed'],['saat kaldı','hours left'],['Bugün','Today'],['Yaklaşanlar','Upcoming'],['Tüm Yapımlar','All Titles'],['Yapımlar','Titles'],['Akıllı Takvim','Smart Calendar'],['Takvim','Calendar'],['İzlendi olarak işaretle','Mark as watched'],['İzlendi','Watched'],['Dizi','Series'],['Sezon','Season'],['Bölüm','Episode']],
-de:[['GÜN KALDI','TAGE ÜBRIG'],['MARVEL MARATONUN','DEIN MARVEL-MARATHON'],['tamamlandı','abgeschlossen'],['görev tamamlandı','Aufgaben erledigt'],['saat kaldı','Stunden übrig'],['Bugün','Heute'],['Yaklaşanlar','Als Nächstes'],['Tüm Yapımlar','Alle Titel'],['Yapımlar','Titel'],['Akıllı Takvim','Smarter Kalender'],['Takvim','Kalender'],['İzlendi olarak işaretle','Als gesehen markieren'],['İzlendi','Gesehen'],['Dizi','Serie'],['Sezon','Staffel'],['Bölüm','Folge']],
-es:[['GÜN KALDI','DÍAS RESTANTES'],['MARVEL MARATONUN','TU MARATÓN MARVEL'],['tamamlandı','completado'],['görev tamamlandı','tareas completadas'],['saat kaldı','horas restantes'],['Bugün','Hoy'],['Yaklaşanlar','Próximamente'],['Tüm Yapımlar','Todos los títulos'],['Yapımlar','Títulos'],['Akıllı Takvim','Calendario inteligente'],['Takvim','Calendario'],['İzlendi olarak işaretle','Marcar como visto'],['İzlendi','Visto'],['Dizi','Serie'],['Sezon','Temporada'],['Bölüm','Episodio']],
-fr:[['GÜN KALDI','JOURS RESTANTS'],['MARVEL MARATONUN','TON MARATHON MARVEL'],['tamamlandı','terminé'],['görev tamamlandı','éléments terminés'],['saat kaldı','heures restantes'],['Bugün','Aujourd’hui'],['Yaklaşanlar','À venir'],['Tüm Yapımlar','Tous les titres'],['Yapımlar','Titres'],['Akıllı Takvim','Calendrier intelligent'],['Takvim','Calendrier'],['İzlendi olarak işaretle','Marquer comme vu'],['İzlendi','Vu'],['Dizi','Série'],['Sezon','Saison'],['Bölüm','Épisode']],
-ja:[['GÜN KALDI','日'],['MARVEL MARATONUN','MARVEL マラソン'],['tamamlandı','完了'],['görev tamamlandı','完了'],['saat kaldı','時間残り'],['Bugün','今日'],['Yaklaşanlar','次の予定'],['Tüm Yapımlar','すべての作品'],['Yapımlar','作品'],['Akıllı Takvim','スマートカレンダー'],['Takvim','カレンダー'],['İzlendi olarak işaretle','視聴済みにする'],['İzlendi','視聴済み'],['Dizi','シリーズ'],['Sezon','シーズン'],['Bölüm','エピソード']]}
-const originals=new WeakMap<Text,string>();const lastApplied=new WeakMap<Text,string>();
-function translateText(base:string,lang:Lang){let out=base;for(const[a,b]of replacements[lang])out=out.replaceAll(a,b);return out}
-function translateTree(root:Node,lang:Lang){if(root.nodeType===Node.TEXT_NODE){const t=root as Text;if(!originals.has(t))originals.set(t,t.data);const next=translateText(originals.get(t)||t.data,lang);if(t.data!==next){lastApplied.set(t,next);t.data=next}return}if(root instanceof Element&&root.closest('.clientTools,.modalBack,.libraryTools,.buremiyeAd,script,style'))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n:Node|null;while(n=w.nextNode()){const t=n as Text;if(!originals.has(t))originals.set(t,t.data);const next=translateText(originals.get(t)||t.data,lang);if(t.data!==next){lastApplied.set(t,next);t.data=next}}}
 export default function ClientTools(){
-const[lang,setLangState]=useState<Lang>('tr');const[menu,setMenu]=useState(false);const[sync,setSync]=useState(false);const[msg,setMsg]=useState('');const[code,setCode]=useState('');const[query,setQuery]=useState('');const[filter,setFilter]=useState<Filter>('all');const[showFilters,setShowFilters]=useState(false);const cur=langs.find(x=>x.id===lang)!;
-useEffect(()=>{const saved=(localStorage.getItem('watchpath-lang')||'tr') as Lang;setLangState(langs.some(x=>x.id===saved)?saved:'tr');const q=new URLSearchParams(location.search).get('sync');if(q){try{const d=JSON.parse(decodeURIComponent(escape(atob(q))));localStorage.setItem('watchpath-progress',JSON.stringify(d.done||{}));if(langs.some(x=>x.id===d.lang))localStorage.setItem('watchpath-lang',d.lang);history.replaceState({},'',location.pathname);location.reload()}catch{}}},[])
-useEffect(()=>{document.documentElement.lang=lang;localStorage.setItem('watchpath-lang',lang);translateTree(document.body,lang);const ob=new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData'){const t=m.target as Text;if(lastApplied.get(t)===t.data)continue;originals.set(t,t.data);translateTree(t,lang)}else m.addedNodes.forEach(n=>translateTree(n,lang))}setShowFilters(!!document.querySelector('.list .card'))});ob.observe(document.body,{subtree:true,childList:true,characterData:true});setShowFilters(!!document.querySelector('.list .card'));return()=>ob.disconnect()},[lang])
-useEffect(()=>{const cards=Array.from(document.querySelectorAll<HTMLElement>('.list .card'));for(const card of cards){const title=(card.querySelector('h3')?.textContent||'').toLocaleLowerCase();const isSeries=!!card.querySelector('.icon');const watched=isSeries?false:!!card.querySelector('.watch.on');const typeOk=filter==='all'||(filter==='movie'&&!isSeries)||(filter==='series'&&isSeries)||(filter==='watched'&&watched)||(filter==='unwatched'&&!watched);card.style.display=title.includes(query.trim().toLocaleLowerCase())&&typeOk?'':'none'}},[query,filter,showFilters])
-const setLang=(v:Lang)=>{setLangState(v);setMenu(false)};const payload=()=>btoa(unescape(encodeURIComponent(JSON.stringify({v:1,done:JSON.parse(localStorage.getItem('watchpath-progress')||'{}'),lang}))));const link=typeof location==='undefined'?'':`${location.origin}${location.pathname}?sync=${payload()}`;const qr=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;const copy=async()=>{await navigator.clipboard.writeText(link);setMsg(ui[lang].copied)};const imp=()=>{try{const q=code.includes('sync=')?new URL(code).searchParams.get('sync')||'':code;const d=JSON.parse(decodeURIComponent(escape(atob(q.trim()))));localStorage.setItem('watchpath-progress',JSON.stringify(d.done||{}));if(langs.some(x=>x.id===d.lang))localStorage.setItem('watchpath-lang',d.lang);location.reload()}catch{setMsg(ui[lang].invalid)}};
-return <><div className="clientTools"><div className="langPicker"><button className="toolMain" onClick={()=>setMenu(!menu)}><Languages/><span>{cur.flag} {cur.name}</span></button>{menu&&<div className="langDropdown">{langs.map(l=><button key={l.id} className={l.id===lang?'selected':''} onClick={()=>setLang(l.id)}><span>{l.flag}</span><b>{l.name}</b>{l.id===lang&&<Check/>}</button>)}</div>}</div><button className="toolMain" onClick={()=>setSync(true)}><QrCode/><span>{ui[lang].transfer}</span></button></div>
-{showFilters&&<div className="libraryTools"><div className="searchBox"><Search/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={ui[lang].search}/></div><div className="filterChips">{(['all','movie','series','watched','unwatched'] as Filter[]).map(f=><button key={f} className={filter===f?'active':''} onClick={()=>setFilter(f)}>{f==='all'?ui[lang].all:f==='movie'?ui[lang].movies:f==='series'?ui[lang].series:f==='watched'?ui[lang].watched:ui[lang].unwatched}</button>)}</div></div>}
-<a className="buremiyeAd" href="https://www.behance.net/burhanyenier" target="_blank" rel="noopener noreferrer"><div className="adLogo">B</div><div><small>{ui[lang].creator}</small><b>BUREMİYE</b><span>{ui[lang].adline}</span></div><strong>{ui[lang].portfolio}<ExternalLink/></strong></a>
-{sync&&<div className="modalBack"><section className="syncPanel"><button className="close" onClick={()=>setSync(false)}><X/></button><div className="syncTitle"><QrCode/><div><small>WATCHPATH SYNC</small><h2>{ui[lang].device}</h2></div></div><div className="deviceFlow"><Monitor/><ArrowRight/><Smartphone/></div><p>{ui[lang].deviceDesc}</p><div className="qrFrame"><img className="qr" src={qr} alt="Watchpath QR"/><b>SCAN TO TRANSFER</b></div><button className="primary" onClick={copy}><Copy/>{ui[lang].copy}</button><details className="manual"><summary>{ui[lang].manual}</summary><textarea value={code} onChange={e=>setCode(e.target.value)} placeholder="Watchpath transfer link / code"/><button className="secondary" onClick={imp}><Download/>{ui[lang].import}</button></details>{msg&&<b className="syncMsg">{msg}</b>}<small className="privacy">{ui[lang].note}</small></section></div>}</>}
+ const[lang,setLangState]=useState<Lang>('tr')
+ const[menu,setMenu]=useState(false)
+ const[sync,setSync]=useState(false)
+ const[msg,setMsg]=useState('')
+ const[code,setCode]=useState('')
+ const cur=languages.find(x=>x.id===lang)||languages[0]
+
+ useEffect(()=>{
+  const saved=(localStorage.getItem('watchpath-lang')||'tr') as Lang
+  const valid=languages.some(x=>x.id===saved)?saved:'tr'
+  setLangState(valid)
+  window.dispatchEvent(new CustomEvent('watchpath-language',{detail:valid}))
+  const q=new URLSearchParams(location.search).get('sync')
+  if(q){try{const d=JSON.parse(decodeURIComponent(escape(atob(q))));localStorage.setItem('watchpath-progress',JSON.stringify(d.done||{}));if(languages.some(x=>x.id===d.lang))localStorage.setItem('watchpath-lang',d.lang);history.replaceState({},'',location.pathname);location.reload()}catch{}}
+ },[])
+
+ const setLang=(v:Lang)=>{localStorage.setItem('watchpath-lang',v);document.documentElement.lang=v;setLangState(v);setMenu(false);window.dispatchEvent(new CustomEvent('watchpath-language',{detail:v}))}
+ const payload=useMemo(()=>{if(typeof window==='undefined')return'';let done={};try{done=JSON.parse(localStorage.getItem('watchpath-progress')||'{}')}catch{}return btoa(unescape(encodeURIComponent(JSON.stringify({v:1,done,lang}))))},[lang,sync])
+ const link=typeof window==='undefined'?'':`${location.origin}${location.pathname}?sync=${payload}`
+ const qr=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`
+ const copy=async()=>{await navigator.clipboard.writeText(link);setMsg(tx(lang,'copied'))}
+ const imp=()=>{try{const q=code.includes('sync=')?new URL(code).searchParams.get('sync')||'':code;const d=JSON.parse(decodeURIComponent(escape(atob(q.trim()))));localStorage.setItem('watchpath-progress',JSON.stringify(d.done||{}));if(languages.some(x=>x.id===d.lang))localStorage.setItem('watchpath-lang',d.lang);location.reload()}catch{setMsg(tx(lang,'invalid'))}}
+
+ return <>
+  <div className="clientTools">
+   <div className="langPicker">
+    <button className="toolMain" onClick={()=>setMenu(!menu)}><Languages/><span>{cur.flag} {cur.label}</span></button>
+    {menu&&<div className="langDropdown">{languages.map(l=><button key={l.id} className={l.id===lang?'selected':''} onClick={()=>setLang(l.id)}><span>{l.flag}</span><b>{l.label}</b>{l.id===lang&&<Check/>}</button>)}</div>}
+   </div>
+   <button className="toolMain" onClick={()=>setSync(true)}><QrCode/><span>{tx(lang,'transfer')}</span></button>
+  </div>
+
+  <a className="buremiyeAd" href="https://www.behance.net/burhanyenier" target="_blank" rel="noopener noreferrer" aria-label="Buremiye Behance portfolio">
+   <div className="adLogo">B</div><div><small>{tx(lang,'creator')}</small><b>BUREMİYE</b><span>{tx(lang,'adline')}</span></div><strong>{tx(lang,'portfolio')}<ExternalLink/></strong>
+  </a>
+
+  {sync&&<div className="modalBack" onMouseDown={e=>{if(e.target===e.currentTarget)setSync(false)}}><section className="syncPanel">
+   <button className="close" onClick={()=>setSync(false)}><X/></button>
+   <div className="syncTitle"><QrCode/><div><small>WATCHPATH SYNC</small><h2>{tx(lang,'device')}</h2></div></div>
+   <div className="deviceFlow"><Monitor/><ArrowRight/><Smartphone/></div>
+   <p>{tx(lang,'deviceDesc')}</p>
+   <div className="qrFrame"><img className="qr" src={qr} alt="Watchpath QR"/><b>SCAN TO TRANSFER</b></div>
+   <button className="primary" onClick={copy}><Copy/>{tx(lang,'copyLink')}</button>
+   <details className="manual"><summary>{tx(lang,'manualImport')}</summary><textarea value={code} onChange={e=>setCode(e.target.value)} placeholder="Watchpath transfer link / code"/><button className="secondary" onClick={imp}><Download/>{tx(lang,'import')}</button></details>
+   {msg&&<b className="syncMsg">{msg}</b>}<small className="privacy">{tx(lang,'syncNote')}</small>
+  </section></div>}
+ </>
+}
