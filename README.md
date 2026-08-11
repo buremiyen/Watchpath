@@ -41,6 +41,12 @@ npm run build
 npm start
 ```
 
+## Privacy & security
+
+Watchpath does not currently require an account or a private backend. Viewing progress is stored locally in the browser. QR/transfer links contain viewing-progress data and language preference, so only share a transfer link with a device/person you intend to receive that progress.
+
+The repository is designed not to require private API keys. Secrets, tokens, `.env` files, signing keys and local Vercel metadata are excluded by `.gitignore`. See [SECURITY.md](SECURITY.md) for vulnerability reporting and security guidance.
+
 ## Project structure
 
 - `app/page.tsx` — marathon data, progress, schedule, search and filters
@@ -67,8 +73,10 @@ When adding interface copy, update every supported language in `app/i18n.ts` rat
 
 Watchpath source code is released under the [MIT License](LICENSE).
 
+**Important:** The MIT License covers Watchpath's own source code only. It does not grant rights to Marvel/Disney/X-Men names, trademarks, poster artwork, or any other third-party copyrighted material.
+
 ## Disclaimer
 
-Watchpath is an independent fan-made/open-source project and is not affiliated with Marvel, Disney, TMDB, or any streaming service. Movie and series names, poster artwork and related trademarks belong to their respective rights holders. Poster imagery is used only to identify titles in the demo experience.
+Watchpath is an independent fan-made/open-source project and is not affiliated with, endorsed by, or sponsored by Marvel, Disney, TMDB, or any streaming service. Movie and series names, poster artwork and related trademarks belong to their respective rights holders. Third-party imagery is used only to identify titles in the demo experience and is not licensed under Watchpath's MIT License.
 
 Crafted by **BUREMİYE**.
