@@ -1,4 +1,5 @@
 import './globals.css'
+import './liquid-glass.css'
 import type {Metadata,Viewport} from 'next'
 import Script from 'next/script'
 import RegisterSW from './register-sw'
