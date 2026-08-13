@@ -1,12 +1,13 @@
 /* Liquid Glass visual layer */
-:root{--glass-bg:rgba(17,18,24,.58);--glass-bg-strong:rgba(18,19,26,.72);--glass-line:rgba(255,255,255,.12);--glass-hi:rgba(255,255,255,.08);--glass-shadow:0 18px 50px rgba(0,0,0,.34)}
-body{background:radial-gradient(circle at 15% 0%,rgba(124,73,255,.13),transparent 30%),radial-gradient(circle at 85% 15%,rgba(236,61,83,.13),transparent 28%),linear-gradient(180deg,#090a0f,#0b0c11 45%,#08090d)}
-.card,.unit,.calendarBox,.libraryTools,.toolMain,nav,.syncPanel,.buremiyeAd,.hero{background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025))!important;border:1px solid var(--glass-line)!important;backdrop-filter:blur(24px) saturate(145%)!important;-webkit-backdrop-filter:blur(24px) saturate(145%)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),var(--glass-shadow)!important}
-.card,.unit,.calendarBox,.hero{position:relative;overflow:hidden}
-.card:before,.unit:before,.calendarBox:before,.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.075),transparent 28%,transparent 70%,rgba(255,255,255,.025));pointer-events:none}
-.card:hover,.unit:hover{border-color:rgba(255,255,255,.2)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 22px 60px rgba(0,0,0,.42)!important}
-.libraryTools{background:rgba(14,15,21,.66)!important}
-.searchBox,.filterChips button,.watch,.episodes button,.langDropdown,.date{background:rgba(255,255,255,.045)!important;border-color:rgba(255,255,255,.1)!important}
-nav{background:rgba(15,16,22,.62)!important}
-nav button.active{background:linear-gradient(135deg,rgba(239,70,85,.22),rgba(132,67,255,.13))!important;border:1px solid rgba(255,255,255,.08)}
-@media(max-width:520px){.card,.unit,.calendarBox,.hero{backdrop-filter:blur(18px) saturate(135%)!important;-webkit-backdrop-filter:blur(18px) saturate(135%)!important}}
+:root{--glass-bg:rgba(16,17,24,.42);--glass-bg-strong:rgba(18,19,27,.58);--glass-line:rgba(255,255,255,.17);--glass-hi:rgba(255,255,255,.12);--glass-shadow:0 24px 70px rgba(0,0,0,.38)}
+body{background:radial-gradient(circle at 14% 2%,rgba(126,72,255,.18),transparent 28%),radial-gradient(circle at 86% 10%,rgba(236,61,83,.18),transparent 27%),radial-gradient(circle at 50% 88%,rgba(51,126,255,.08),transparent 34%),linear-gradient(180deg,#090a10,#0b0c12 48%,#08090d);background-attachment:fixed}
+.card,.unit,.calendarBox,.libraryTools,.toolMain,nav,.syncPanel,.buremiyeAd,.hero{background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.025) 38%,rgba(255,255,255,.045))!important;border:1px solid var(--glass-line)!important;backdrop-filter:blur(30px) saturate(175%)!important;-webkit-backdrop-filter:blur(30px) saturate(175%)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(255,255,255,.035),var(--glass-shadow)!important}
+.card,.unit,.calendarBox,.hero,.libraryTools,.toolMain,nav{position:relative;overflow:hidden}
+.card:before,.unit:before,.calendarBox:before,.hero:before,.libraryTools:before,.toolMain:before,nav:before{content:"";position:absolute;inset:-1px;background:linear-gradient(118deg,rgba(255,255,255,.13),transparent 24%,transparent 66%,rgba(255,255,255,.035));pointer-events:none;z-index:0}
+.card>* ,.unit>* ,.calendarBox>* ,.hero>* ,.libraryTools>* ,.toolMain>* ,nav>*{position:relative;z-index:1}
+.card:hover,.unit:hover{border-color:rgba(255,255,255,.25)!important;transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.19),0 28px 78px rgba(0,0,0,.46)!important}
+.libraryTools{background:rgba(13,14,21,.48)!important}.searchBox,.filterChips button,.watch,.episodes button,.langDropdown,.date{background:rgba(255,255,255,.055)!important;border-color:rgba(255,255,255,.12)!important;backdrop-filter:blur(16px)}
+nav{background:rgba(13,14,21,.50)!important}nav button.active{background:linear-gradient(135deg,rgba(239,70,85,.26),rgba(132,67,255,.16))!important;border:1px solid rgba(255,255,255,.11);box-shadow:inset 0 1px rgba(255,255,255,.08)}
+/* Old layout-mounted finale is hidden; the real finale now lives directly at the end of the Titles page. */
+#doomsday-finale{display:none!important}
+@media(max-width:520px){.card,.unit,.calendarBox,.hero{backdrop-filter:blur(22px) saturate(155%)!important;-webkit-backdrop-filter:blur(22px) saturate(155%)!important}}
