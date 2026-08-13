@@ -5,7 +5,7 @@ import RegisterSW from './register-sw'
 import ClientTools from './client-tools'
 import AdSlots from './ad-slots'
 
-const adsenseClient=process.env.NEXT_PUBLIC_ADSENSE_CLIENT||''
-export const metadata:Metadata={title:'Watchpath',description:'Adaptive movie and TV marathon planner',manifest:'/manifest.webmanifest',applicationName:'Watchpath',appleWebApp:{capable:true,title:'Watchpath',statusBarStyle:'black-translucent'},...(adsenseClient?{other:{'google-adsense-account':adsenseClient}}:{})}
+const adsenseClient=process.env.NEXT_PUBLIC_ADSENSE_CLIENT||'ca-pub-5750786390629221'
+export const metadata:Metadata={title:'Watchpath',description:'Adaptive movie and TV marathon planner',manifest:'/manifest.webmanifest',applicationName:'Watchpath',appleWebApp:{capable:true,title:'Watchpath',statusBarStyle:'black-translucent'},other:{'google-adsense-account':adsenseClient}}
 export const viewport:Viewport={themeColor:'#08090d',width:'device-width',initialScale:1,viewportFit:'cover'}
-export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="tr"><body>{adsenseClient&&<Script id="adsense" async strategy="afterInteractive" crossOrigin="anonymous" src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}/>}<RegisterSW/><ClientTools/><AdSlots/>{children}</body></html>}
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="tr"><body><Script id="adsense" async strategy="afterInteractive" crossOrigin="anonymous" src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}/><RegisterSW/><ClientTools/><AdSlots/>{children}</body></html>}
