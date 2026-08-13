@@ -1,6 +1,6 @@
 'use client'
 import {useEffect,useMemo,useState} from 'react'
-import {ArrowRight,Check,Copy,Download,ExternalLink,Languages,Monitor,QrCode,Smartphone,X} from 'lucide-react'
+import {ArrowRight,Check,Copy,Download,Languages,Monitor,QrCode,Smartphone,X} from 'lucide-react'
 import {Lang,languages,tx} from './i18n'
 
 export default function ClientTools(){
@@ -35,10 +35,6 @@ export default function ClientTools(){
    </div>
    <button className="toolMain" onClick={()=>setSync(true)}><QrCode/><span>{tx(lang,'transfer')}</span></button>
   </div>
-
-  <a className="buremiyeAd" href="https://www.behance.net/burhanyenier" target="_blank" rel="noopener noreferrer" aria-label="Buremiye Behance portfolio">
-   <div className="adLogo">B</div><div><small>{tx(lang,'creator')}</small><b>BUREMİYE</b><span>{tx(lang,'adline')}</span></div><strong>{tx(lang,'portfolio')}<ExternalLink/></strong>
-  </a>
 
   {sync&&<div className="modalBack" onMouseDown={e=>{if(e.target===e.currentTarget)setSync(false)}}><section className="syncPanel">
    <button className="close" onClick={()=>setSync(false)}><X/></button>
