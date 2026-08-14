@@ -130,15 +130,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .brandMark {
   width: 42px;
   height: 42px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 14px;
-  background: linear-gradient(145deg, rgba(245, 75, 98, 0.88), rgba(102, 46, 71, 0.76));
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.25), 0 12px 35px rgba(168, 36, 65, 0.25);
-  font-size: 18px;
-  font-weight: 950;
+  display: block;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 10px 22px rgba(211, 48, 85, 0.28));
+  transform: translateZ(0);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
 }
+.brandLockup:hover .brandMark { transform: translate3d(0, -2px, 0) rotate(-3deg) scale(1.045); filter: drop-shadow(0 14px 26px rgba(211, 48, 85, 0.38)); }
 
 .brandLockup b { display: block; font-size: 17px; letter-spacing: 0.15em; }
 .brandLockup small { display: block; margin-top: 3px; color: var(--muted-2); font-size: 7px; letter-spacing: 0.24em; }

@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     applicationName: "Watchpath",
     manifest: "/manifest.webmanifest",
-    icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+    icons: { icon: "/favicon.svg", shortcut: "/favicon.svg", apple: "/favicon.svg" },
     appleWebApp: { capable: true, title: "Watchpath", statusBarStyle: "black-translucent" },
     openGraph: {
       type: "website",

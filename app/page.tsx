@@ -308,7 +308,14 @@ export default function Page() {
       <main className="watchpathApp">
         <header className="topbar">
           <a className="brandLockup" href="#top" aria-label="Watchpath ana sayfa">
-            <span className="brandMark">W</span>
+            <img
+              className="brandMark"
+              src="/favicon.svg"
+              width="42"
+              height="42"
+              alt=""
+              aria-hidden="true"
+            />
             <span>
               <b>WATCHPATH</b>
               <small>{tx(lang, "subtitle")}</small>

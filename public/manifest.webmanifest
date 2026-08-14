@@ -1,1 +1,17 @@
-{"name":"Watchpath","short_name":"Watchpath","description":"Adaptive movie & TV marathon planner","start_url":"/","display":"standalone","background_color":"#08090d","theme_color":"#08090d","icons":[]}
+{
+  "name": "Watchpath",
+  "short_name": "Watchpath",
+  "description": "Adaptive movie & TV marathon planner",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08090d",
+  "theme_color": "#E63B62",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
