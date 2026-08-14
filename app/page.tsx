@@ -1,46 +1,471 @@
-'use client'
-import {useEffect,useMemo,useState} from 'react'
-import {Check,ChevronDown,ChevronRight,CalendarDays,Film,Home,Search} from 'lucide-react'
-import {Lang,languages,localeFor,tx} from './i18n'
-import DoomsdayFinale from './doomsday-finale'
+"use client";
 
-type Episode={id:string;name:string;runtime:number}
-type Title={id:string;name:string;year:number;type:'movie'|'series';runtime?:number;poster:string;platform:string;seasons?:Episode[][];track?:'main'|'xmen'}
-type Unit={id:string;title:Title;runtime:number;season?:number;episode?:number}
-type Filter='all'|'movie'|'series'|'watched'|'unwatched'
-type RouteMode='quick'|'balanced'|'complete'
-const p=(x:string)=>`https://image.tmdb.org/t/p/w342${x}`
-const ph=(name:string)=>`https://placehold.co/342x513/15161c/eeeeee?text=${encodeURIComponent(name)}`
-const eps=(key:string,counts:number[],runtime=45)=>counts.map((count,si)=>Array.from({length:count},(_,i)=>({id:`${key}-${si+1}-${i+1}`,name:`Episode ${i+1}`,runtime})))
-const m=(id:string,name:string,year:number,runtime=120,poster=''):Title=>({id,name,year,type:'movie',runtime,poster:poster?p(poster):ph(name),platform:'Disney+',track:'main'})
-const s=(id:string,name:string,year:number,counts:number[],runtime=45,poster=''):Title=>({id,name,year,type:'series',poster:poster?p(poster):ph(name),platform:'Disney+',seasons:eps(id,counts,runtime),track:'main'})
+import { useEffect, useMemo, useState } from "react";
+import {
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  CirclePlay,
+  Film,
+  Home,
+  Layers3,
+  Search,
+  Sparkles,
+} from "lucide-react";
+import AmbientEffects from "./ambient-effects";
+import ClientTools from "./client-tools";
+import Countdown from "./countdown";
+import DoomsdayFinale from "./doomsday-finale";
+import { Lang, languages, localeFor, tx } from "./i18n";
+import {
+  allTitles,
+  DOOMSDAY_DATE,
+  routeTitles,
+  titleUnits,
+  type Title,
+  type Track,
+  type Unit,
+} from "./marvel-data";
+import PresenceBadge from "./presence-badge";
+import RoadmapExperience from "./roadmap-experience";
 
-const main:Title[]=[
-m('iron-man','Iron Man',2008,126,'/78lPtwv72eTNqFW9COBYI0dWDJa.jpg'),m('hulk','The Incredible Hulk',2008,112,'/gKzYx79y0AQTL4UAk1cBQJ3nvrm.jpg'),m('iron-man-2','Iron Man 2',2010,124,'/6WBeq4fCfn7AN0o21W9qNcRF2l9.jpg'),m('thor','Thor',2011,115,'/prSfAi1xGrhLQNxVSUFh61xQ4Qy.jpg'),m('cap1','Captain America: The First Avenger',2011,124,'/vSNxAJTlD0r02V9sPYpOjqDZXUK.jpg'),m('avengers','The Avengers',2012,143,'/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg'),m('iron-man-3','Iron Man 3',2013,130,'/qhPtAc1TKbMPqNvcdXSOn9Bn7hZ.jpg'),m('thor2','Thor: The Dark World',2013,112,'/wp6OxE4poJ4G7c0U2ZIXasTSMR7.jpg'),m('winter','Captain America: The Winter Soldier',2014,136,'/tVFRpFw3xTedgPGqxW0AOI8Qhh0.jpg'),m('gotg','Guardians of the Galaxy',2014,121,'/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg'),m('ultron','Avengers: Age of Ultron',2015,141,'/4ssDuvEDkSArWEdyBl2X5EHvYKU.jpg'),m('antman','Ant-Man',2015,117,'/rQRnQfUl3kfp78nCWq8Ks04vnq1.jpg'),m('civil','Captain America: Civil War',2016,147,'/rAGiXaUfPzY7CDEyNKUofk3Kw2e.jpg'),m('strange','Doctor Strange',2016,115,'/uGBVj3bEbCoZbDjjl9wTxcygko1.jpg'),m('gotg2','Guardians of the Galaxy Vol. 2',2017,137,'/y4MBh0EjBlMuOzv9axM4qJlmhzz.jpg'),m('homecoming','Spider-Man: Homecoming',2017,133,'/c24sv2weTHPsmDa7jEMN0m2P3RT.jpg'),m('ragnarok','Thor: Ragnarok',2017,130,'/rzRwTcFvttcN1ZpX2xv4j3tSdJu.jpg'),m('black-panther','Black Panther',2018,134,'/uxzzxijgPIY7slzFvMotPv8wjKA.jpg'),m('infinity','Avengers: Infinity War',2018,149,'/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg'),m('antman-wasp','Ant-Man and the Wasp',2018,118,'/cFQEO687n1K6umXbInzocxcnAQz.jpg'),m('captain-marvel','Captain Marvel',2019,124,'/AtsgWhDnHTq68L0lLsUrCnM7TjG.jpg'),m('endgame','Avengers: Endgame',2019,181,'/or06FN3Dka5tukK1e9sl16pB3iy.jpg'),m('far-from-home','Spider-Man: Far From Home',2019,129,'/4q2NNj4S5dG2RLF9CpXsej7yXl.jpg'),m('black-widow','Black Widow',2021,134,'/qAZ0pzat24kLdO3o8ejmbLxyOac.jpg'),m('shangchi','Shang-Chi and the Legend of the Ten Rings',2021,132,'/1BIoJGKbXjdFDAqUEiA2VHqkK1Z.jpg'),m('eternals','Eternals',2021,156,'/lFByFSLV5WDJEv3KabbdAF959F2.jpg'),m('no-way-home','Spider-Man: No Way Home',2021,148,'/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg'),m('strange2','Doctor Strange in the Multiverse of Madness',2022,126,'/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg'),m('thor-love','Thor: Love and Thunder',2022,119,'/pIkRyD18kl4FhoCNQuWxWu5cBLM.jpg'),m('wakanda','Black Panther: Wakanda Forever',2022,162,'/sv1xJUazXeYqALzczSZ3O6nkH75.jpg'),m('quantumania','Ant-Man and the Wasp: Quantumania',2023,125,'/qnqGbB22YJ7dSs4o6M7exTpNxPz.jpg'),m('gotg3','Guardians of the Galaxy Vol. 3',2023,150,'/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg'),m('marvels','The Marvels',2023,105,'/9GBhzXMFjgcZ3FdR9w3bUMMTps5.jpg'),m('deadpool-wolverine','Deadpool & Wolverine',2024,128,'/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg'),m('brave-new-world','Captain America: Brave New World',2025,118,'/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg'),m('thunderbolts','Thunderbolts* / The New Avengers',2025,127,'/hqcexYHbiTBfDIdDWxrxPtVndBX.jpg'),m('fantastic-four','The Fantastic Four: First Steps',2025,115,'/x26MtUlwtWD26d0G0FXcppxCJio.jpg'),m('brand-new-day','Spider-Man: Brand New Day',2026,130),
-s('daredevil','Daredevil',2015,[13,13,13],52),s('jessica-jones','Jessica Jones',2015,[13,13,13],52),s('luke-cage','Luke Cage',2016,[13,13],52),s('iron-fist','Iron Fist',2017,[13,10],52),s('punisher','The Punisher',2017,[13,13],52),s('wandavision','WandaVision',2021,[9],38,'/glKDfE6btIRcVB5zrjspRIs4r52.jpg'),s('falcon','The Falcon and the Winter Soldier',2021,[6],52,'/6kbAMLteGO8yyewYau6bJ683sw7.jpg'),s('loki','Loki',2021,[6,6],50,'/voHUmluYmKyleFkTu3lOXQG702u.jpg'),s('hawkeye','Hawkeye',2021,[6],48,'/ct5pNE5dDHryHLDnxyZPYcqO1sz.jpg'),s('moon-knight','Moon Knight',2022,[6],50,'/vKDUmKO6F9bSKKyHhg7YGbgcEeF.jpg'),s('ms-marvel','Ms. Marvel',2022,[6],45,'/cdkyMYdu8ao26XOBvilNzLneUg1.jpg'),s('she-hulk','She-Hulk: Attorney at Law',2022,[9],35),s('echo','Echo',2024,[5],45),s('agatha','Agatha All Along',2024,[9],42),s('born-again-1','Daredevil: Born Again — Season 1',2025,[9],50),s('ironheart','Ironheart',2025,[6],45),s('wonder-man','Wonder Man',2026,[8],35),s('born-again-2','Daredevil: Born Again — Season 2',2026,[8],50),m('one-last-kill','The Punisher: One Last Kill',2026,50),s('visionquest','VisionQuest',2026,[8],45)
-]
-const xmen:Title[]=[m('xmen','X-Men',2000,104,'/bRDAc4GogyS9ci3ow7UnInOcriN.jpg'),m('x2','X2: X-Men United',2003,133,'/bWMw0FMsY8DICgrQnrTSWbzEgtr.jpg'),m('x3','X-Men: The Last Stand',2006,104,'/a2xicU8DpKtRizOHjQLC1JyCSRS.jpg'),m('wolverine-origins','X-Men Origins: Wolverine',2009,107,'/yN7UFO6b0BbqPNbRz2tXW9O7q7.jpg'),m('firstclass','X-Men: First Class',2011,132,'/hNEokmUke0dazoBhttFN0o3L7Xv.jpg'),m('the-wolverine','The Wolverine',2013,126,'/8lzmovtARDXnE7kTDOum02i6fXv.jpg'),m('dofp','X-Men: Days of Future Past',2014,132,'/tYfijzolzgoMOtegh1Y7j2Enorg.jpg'),m('apocalypse','X-Men: Apocalypse',2016,144,'/ikA8UhYdTGpqBatFa93nIf6noSr.jpg'),m('logan','Logan',2017,137,'/fnbjcRDYn6YviCcePDnGdyAkYsB.jpg'),m('dark-phoenix','Dark Phoenix',2019,114,'/cCTJPelKGLhALq3r51A9uMonxKj.jpg'),m('new-mutants','The New Mutants',2020,94,'/xiDGcXJTvu1lazFRYip6g1eLt9c.jpg'),{...s('xmen97',"X-Men '97",2024,[10,10],32,'/9Ycz7yYRf9V4jk3YXwcZhFtbNcF.jpg'),track:'xmen'}].map(t=>({...t,track:'xmen'}))
-const titles=[...main,...xmen]
-const QUICK_IDS=new Set(['iron-man','avengers','winter','ultron','civil','strange','ragnarok','black-panther','infinity','endgame','wandavision','loki','no-way-home','strange2','deadpool-wolverine','thunderbolts','fantastic-four','brand-new-day'])
-const TARGET=new Date('2026-12-18T00:00:00')
-const dateKey=(d:Date)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+type Filter = "all" | "movie" | "series" | "watched" | "unwatched";
+type Scope = "all" | Track;
+type RouteMode = "quick" | "balanced" | "complete";
+type Tab = "home" | "titles" | "calendar";
 
-export default function Page(){
- const[done,setDone]=useState<Record<string,boolean>>({});const[open,setOpen]=useState<Record<string,boolean>>({});const[tab,setTab]=useState<'home'|'titles'|'calendar'>('home');const[lang,setLang]=useState<Lang>('tr');const[query,setQuery]=useState('');const[filter,setFilter]=useState<Filter>('all');const[route,setRoute]=useState<RouteMode>('balanced')
- useEffect(()=>{try{setDone(JSON.parse(localStorage.getItem('watchpath-progress')||'{}'))}catch{};const saved=(localStorage.getItem('watchpath-lang')||'tr') as Lang;if(languages.some(x=>x.id===saved))setLang(saved);const savedRoute=localStorage.getItem('watchpath-route') as RouteMode|null;if(savedRoute&&['quick','balanced','complete'].includes(savedRoute))setRoute(savedRoute);const fn=(e:Event)=>setLang((e as CustomEvent<Lang>).detail);const routeFn=(e:Event)=>setRoute((e as CustomEvent<RouteMode>).detail);window.addEventListener('watchpath-language',fn);window.addEventListener('watchpath-route',routeFn);return()=>{window.removeEventListener('watchpath-language',fn);window.removeEventListener('watchpath-route',routeFn)}},[])
- const toggle=(id:string)=>setDone(d=>{const n={...d,[id]:!d[id]};localStorage.setItem('watchpath-progress',JSON.stringify(n));return n})
- const routeTitles=useMemo(()=>route==='quick'?main.filter(t=>QUICK_IDS.has(t.id)):route==='balanced'?main.filter(t=>t.type==='movie'):main,[route])
- const units=useMemo<Unit[]>(()=>routeTitles.flatMap(t=>t.type==='movie'?[{id:t.id,title:t,runtime:t.runtime||120}]:(t.seasons||[]).flatMap((ss,si)=>ss.map((e,ei)=>({id:e.id,title:t,runtime:e.runtime,season:si+1,episode:ei+1})))),[routeTitles])
- const pending=units.filter(u=>!done[u.id]),completed=units.length-pending.length,pct=Math.round(completed/Math.max(1,units.length)*100);const now=new Date();now.setHours(0,0,0,0);const days=Math.max(0,Math.ceil((TARGET.getTime()-now.getTime())/86400000));const fmt=(d:Date)=>new Intl.DateTimeFormat(localeFor(lang),{day:'numeric',month:'long',weekday:'short'}).format(d);const runtime=(n:number)=>`${Math.floor(n/60)}${tx(lang,'hourShort')} ${n%60}${tx(lang,'minuteShort')}`
- useEffect(()=>{window.dispatchEvent(new CustomEvent('watchpath-next-poster',{detail:pending[0]?.title.poster||''}))},[route,done,pending[0]?.id])
- const schedule=useMemo(()=>{const map=new Map<string,Unit[]>();if(!pending.length)return map;const slots=Math.max(1,Math.ceil((TARGET.getTime()-now.getTime())/86400000));pending.forEach((u,i)=>{const off=Math.min(slots-1,Math.floor(i*slots/pending.length));const d=new Date(now);d.setDate(d.getDate()+off);const k=dateKey(d);map.set(k,[...(map.get(k)||[]),u])});return map},[done,route])
- const watched=(t:Title)=>t.type==='movie'?!!done[t.id]:(t.seasons||[]).flat().every(e=>!!done[e.id]);const filtered=useMemo(()=>titles.filter(t=>{const w=watched(t),q=t.name.toLowerCase().includes(query.toLowerCase());return q&&(filter==='all'||filter===t.type||(filter==='watched'&&w)||(filter==='unwatched'&&!w))}),[query,filter,done]);const today=schedule.get(dateKey(now))||[];const upcoming=[...schedule.entries()].filter(([k])=>k>dateKey(now)).slice(0,5)
- const routeLabel=route==='quick'?'Hızlı rota':route==='balanced'?'Dengeli rota':'Tam maraton'
- const card=(t:Title)=><div className={'card '+(watched(t)?'finished':'')} key={t.id}><img src={t.poster} alt={t.name}/><div className="info"><div className="titleRow"><div><h3>{t.name}</h3><p>{t.year} · {t.type==='series'?tx(lang,'series'):runtime(t.runtime||120)} · {t.platform}{t.track==='xmen'?' · X-Men':''}</p></div>{t.type==='series'&&<button className="icon" onClick={()=>setOpen(o=>({...o,[t.id]:!o[t.id]}))}>{open[t.id]?<ChevronDown/>:<ChevronRight/>}</button>}</div>{t.type==='movie'&&<button className={'watch '+(done[t.id]?'on':'')} onClick={()=>toggle(t.id)}><Check/>{done[t.id]?tx(lang,'watched'):tx(lang,'markWatched')}</button>}{t.type==='series'&&open[t.id]&&<div className="episodes">{(t.seasons||[]).map((ss,si)=><div key={si}><b>{tx(lang,'season')} {si+1}</b>{ss.map((e,ei)=><button key={e.id} className={done[e.id]?'epDone':''} onClick={()=>toggle(e.id)}><span>{tx(lang,'episode')} {ei+1}</span><Check/></button>)}</div>)}</div>}</div></div>
- const unit=(u:Unit)=><div className="unit" key={u.id}><img src={u.title.poster}/><div><b>{u.title.name}</b><span>{u.season?`${tx(lang,'season')} ${u.season} · ${tx(lang,'episode')} ${u.episode}`:runtime(u.runtime)}</span></div><button onClick={()=>toggle(u.id)}><Check/></button></div>
- return <main data-build="20260814-route-fix"><header><div><div className="brand">WATCHPATH</div><small>{tx(lang,'subtitle')}</small></div><div className="countdown"><b>{days}</b><span>{tx(lang,'days')}</span></div></header><section className="hero"><p>{tx(lang,'marathon')} · {routeLabel}</p><h1>{pct}% {tx(lang,'complete')}</h1><div className="bar"><i style={{width:`${pct}%`}}/></div><div className="stats"><span>{completed} / {units.length} {tx(lang,'tasks')}</span><span>{Math.round(pending.reduce((a,b)=>a+b.runtime,0)/60)} {tx(lang,'hours')}</span></div></section>
- {tab==='home'&&<><h2>{tx(lang,'today')}</h2><p className="muted">{tx(lang,'todayHint')}</p>{today.length?<div className="units">{today.map(unit)}</div>:<div className="calendarBox compact"><h3>{tx(lang,'free')}</h3><p>{tx(lang,'freeHint')}</p></div>}<h2>{tx(lang,'upcoming')}</h2>{upcoming.map(([k,us])=><div className="day" key={k}><b>{fmt(new Date(k+'T12:00:00'))}</b><div className="units">{us.map(unit)}</div></div>)}</>}
- {tab==='titles'&&<><h2>{tx(lang,'allTitles')}</h2><p className="muted">{tx(lang,'allTitlesHint')} · X-Men ayrı tutulur ve Doomsday takvimine otomatik eklenmez.</p><div className="libraryTools"><div className="searchBox"><Search/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={tx(lang,'search')}/></div><div className="filterChips">{(['all','movie','series','watched','unwatched'] as Filter[]).map(f=><button className={filter===f?'active':''} key={f} onClick={()=>setFilter(f)}>{tx(lang,f==='all'?'filterAll':f==='movie'?'filterMovies':f==='series'?'filterSeries':f==='watched'?'filterWatched':'filterUnwatched')}</button>)}</div></div><div className="list">{filtered.map(card)}</div><DoomsdayFinale/></>}
- {tab==='calendar'&&<><h2>{tx(lang,'smartCalendar')}</h2><p className="muted">{tx(lang,'smartCalendarHint')}</p><div className="calendarBox"><CalendarDays/><h3>{days} {tx(lang,'days')}</h3><p>{pending.length} {tx(lang,'tasks')} · {Math.round(pending.reduce((a,b)=>a+b.runtime,0)/60)} {tx(lang,'hours')}</p></div>{[...schedule.entries()].slice(0,20).map(([k,us])=><div className="day" key={k}><b>{fmt(new Date(k+'T12:00:00'))}</b><div className="units">{us.map(unit)}</div></div>)}</>}
- <nav><button className={tab==='home'?'active':''} onClick={()=>setTab('home')}><Home/>{tx(lang,'today')}</button><button className={tab==='titles'?'active':''} onClick={()=>setTab('titles')}><Film/>{tx(lang,'titles')}</button><button className={tab==='calendar'?'active':''} onClick={()=>setTab('calendar')}><CalendarDays/>{tx(lang,'calendar')}</button></nav></main>
+const dateKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate(),
+  ).padStart(2, "0")}`;
+
+const pageLabels = {
+  tr: { routes: { quick: "Hızlı rota", balanced: "Dengeli rota", complete: "Tam maraton" }, scopes: { all: "Tüm evrenler", main: "Ana hikâye", xmen: "X-Men & Multiverse", optional: "Opsiyonel" }, personal: "KİŞİSEL DOOMSDAY PLANI", headline: ["İzleme yolun,", "bugün yeniden hesaplandı."], title: "yapım", next: "sırada", today: "BUGÜNÜN ROTASI", nextStops: "SONRAKİ DURAKLAR", left: "gün kaldı", library: "YAPIMLIK KÜTÜPHANE", result: "sonuç", seriesDone: "Diziyi tamamladın", markSeries: "Tüm bölümleri işaretle", calendar: "KALAN ZAMANA GÖRE", day: "gün kaldı", task: "görev", hour: "saat" },
+  en: { routes: { quick: "Quick route", balanced: "Balanced route", complete: "Complete marathon" }, scopes: { all: "All universes", main: "Main story", xmen: "X-Men & Multiverse", optional: "Optional" }, personal: "YOUR DOOMSDAY PLAN", headline: ["Your watch path", "was recalculated today."], title: "titles", next: "next", today: "TODAY'S ROUTE", nextStops: "NEXT STOPS", left: "days left", library: "TITLE LIBRARY", result: "results", seriesDone: "Series completed", markSeries: "Mark all episodes", calendar: "BASED ON TIME LEFT", day: "days left", task: "tasks", hour: "hours" },
+  de: { routes: { quick: "Schnelle Route", balanced: "Ausgewogene Route", complete: "Kompletter Marathon" }, scopes: { all: "Alle Universen", main: "Haupthandlung", xmen: "X-Men & Multiversum", optional: "Optional" }, personal: "DEIN DOOMSDAY-PLAN", headline: ["Dein Filmplan wurde", "heute neu berechnet."], title: "Titel", next: "als Nächstes", today: "HEUTIGE ROUTE", nextStops: "NÄCHSTE STATIONEN", left: "Tage übrig", library: "TITEL-BIBLIOTHEK", result: "Ergebnisse", seriesDone: "Serie abgeschlossen", markSeries: "Alle Folgen markieren", calendar: "NACH VERBLEIBENDER ZEIT", day: "Tage übrig", task: "Aufgaben", hour: "Stunden" },
+  es: { routes: { quick: "Ruta rápida", balanced: "Ruta equilibrada", complete: "Maratón completo" }, scopes: { all: "Todos los universos", main: "Historia principal", xmen: "X-Men y Multiverso", optional: "Opcional" }, personal: "TU PLAN DOOMSDAY", headline: ["Tu ruta de visionado", "se recalculó hoy."], title: "títulos", next: "siguiente", today: "RUTA DE HOY", nextStops: "PRÓXIMAS PARADAS", left: "días restantes", library: "BIBLIOTECA DE TÍTULOS", result: "resultados", seriesDone: "Serie completada", markSeries: "Marcar todos los episodios", calendar: "SEGÚN EL TIEMPO RESTANTE", day: "días restantes", task: "tareas", hour: "horas" },
+  fr: { routes: { quick: "Parcours rapide", balanced: "Parcours équilibré", complete: "Marathon complet" }, scopes: { all: "Tous les univers", main: "Histoire principale", xmen: "X-Men et Multivers", optional: "Optionnel" }, personal: "TON PLAN DOOMSDAY", headline: ["Ton parcours a été", "recalculé aujourd’hui."], title: "titres", next: "ensuite", today: "PARCOURS DU JOUR", nextStops: "PROCHAINES ÉTAPES", left: "jours restants", library: "BIBLIOTHÈQUE DE TITRES", result: "résultats", seriesDone: "Série terminée", markSeries: "Cocher tous les épisodes", calendar: "SELON LE TEMPS RESTANT", day: "jours restants", task: "tâches", hour: "heures" },
+  ja: { routes: { quick: "クイックルート", balanced: "バランスルート", complete: "完全マラソン" }, scopes: { all: "すべての世界", main: "メインストーリー", xmen: "X-MENとマルチバース", optional: "オプション" }, personal: "あなたのDOOMSDAYプラン", headline: ["視聴ルートを本日", "再計算しました。"], title: "作品", next: "次は", today: "今日のルート", nextStops: "次の予定", left: "日", library: "作品ライブラリ", result: "件", seriesDone: "シリーズ完了", markSeries: "全話をチェック", calendar: "残り時間に合わせて", day: "日", task: "タスク", hour: "時間" },
+} as const;
+
+export default function Page() {
+  const [done, setDone] = useState<Record<string, boolean>>({});
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [tab, setTab] = useState<Tab>("home");
+  const [lang, setLang] = useState<Lang>("tr");
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
+  const [scope, setScope] = useState<Scope>("all");
+  const [route, setRoute] = useState<RouteMode>("balanced");
+  const labels = pageLabels[lang];
+
+  useEffect(() => {
+    try {
+      setDone(JSON.parse(localStorage.getItem("watchpath-progress") || "{}"));
+    } catch {
+      setDone({});
+    }
+
+    const savedLanguage = (localStorage.getItem("watchpath-lang") || "tr") as Lang;
+    if (languages.some((language) => language.id === savedLanguage)) setLang(savedLanguage);
+
+    const savedRoute = localStorage.getItem("watchpath-route") as RouteMode | null;
+    if (savedRoute && ["quick", "balanced", "complete"].includes(savedRoute)) {
+      setRoute(savedRoute);
+    }
+
+    const languageHandler = (event: Event) => setLang((event as CustomEvent<Lang>).detail);
+    const routeHandler = (event: Event) => setRoute((event as CustomEvent<RouteMode>).detail);
+    window.addEventListener("watchpath-language", languageHandler);
+    window.addEventListener("watchpath-route", routeHandler);
+    return () => {
+      window.removeEventListener("watchpath-language", languageHandler);
+      window.removeEventListener("watchpath-route", routeHandler);
+    };
+  }, []);
+
+  const saveProgress = (next: Record<string, boolean>) => {
+    localStorage.setItem("watchpath-progress", JSON.stringify(next));
+    window.dispatchEvent(new CustomEvent("watchpath-progress"));
+    return next;
+  };
+
+  const toggle = (id: string) =>
+    setDone((current) => saveProgress({ ...current, [id]: !current[id] }));
+
+  const selectedTitles = useMemo(() => routeTitles(route), [route]);
+  const units = useMemo(() => titleUnits(selectedTitles), [selectedTitles]);
+  const pending = useMemo(() => units.filter((unit) => !done[unit.id]), [done, units]);
+  const completed = units.length - pending.length;
+  const percentage = Math.round((completed / Math.max(1, units.length)) * 100);
+  const remainingMinutes = pending.reduce((sum, unit) => sum + unit.runtime, 0);
+  const nextTitle = pending[0]?.title;
+
+  const now = new Date();
+  const daysLeft = Math.max(
+    0,
+    Math.floor((DOOMSDAY_DATE.getTime() - Date.now()) / 86_400_000),
+  );
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("watchpath-next-poster", { detail: nextTitle?.poster || "" }),
+    );
+  }, [nextTitle?.poster]);
+
+  const schedule = useMemo(() => {
+    const map = new Map<string, Unit[]>();
+    if (!pending.length) return map;
+
+    const calendarSlots = Math.max(
+      1,
+      Math.ceil((DOOMSDAY_DATE.getTime() - startOfToday.getTime()) / 86_400_000),
+    );
+    const totalRuntime = pending.reduce((sum, unit) => sum + unit.runtime, 0);
+    let elapsedRuntime = 0;
+
+    pending.forEach((unit) => {
+      const offset = Math.min(
+        calendarSlots - 1,
+        Math.floor((elapsedRuntime / Math.max(1, totalRuntime)) * calendarSlots),
+      );
+      const date = new Date(startOfToday);
+      date.setDate(date.getDate() + offset);
+      const key = dateKey(date);
+      map.set(key, [...(map.get(key) ?? []), unit]);
+      elapsedRuntime += unit.runtime;
+    });
+
+    return map;
+  }, [pending, startOfToday.getTime()]);
+
+  const titleWatched = (title: Title) =>
+    title.type === "movie"
+      ? Boolean(done[title.id])
+      : (title.seasons ?? []).flat().every((episode) => Boolean(done[episode.id]));
+
+  const toggleSeries = (title: Title) => {
+    const episodeIds = (title.seasons ?? []).flat().map((episode) => episode.id);
+    const markDone = !episodeIds.every((id) => done[id]);
+    setDone((current) => {
+      const next = { ...current };
+      episodeIds.forEach((id) => {
+        next[id] = markDone;
+      });
+      return saveProgress(next);
+    });
+  };
+
+  const filteredTitles = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase(localeFor(lang));
+    return allTitles.filter((title) => {
+      const watched = titleWatched(title);
+      const matchesQuery = title.name.toLocaleLowerCase(localeFor(lang)).includes(normalizedQuery);
+      const matchesScope = scope === "all" || title.track === scope;
+      const matchesFilter =
+        filter === "all" ||
+        filter === title.type ||
+        (filter === "watched" && watched) ||
+        (filter === "unwatched" && !watched);
+      return matchesQuery && matchesScope && matchesFilter;
+    });
+  }, [done, filter, lang, query, scope]);
+
+  const runtime = (minutes: number) =>
+    `${Math.floor(minutes / 60)}${tx(lang, "hourShort")} ${minutes % 60}${tx(
+      lang,
+      "minuteShort",
+    )}`;
+  const formatDate = (date: Date) =>
+    new Intl.DateTimeFormat(localeFor(lang), {
+      day: "numeric",
+      month: "long",
+      weekday: "long",
+    }).format(date);
+
+  const todayUnits = schedule.get(dateKey(startOfToday)) ?? [];
+  const upcoming = [...schedule.entries()]
+    .filter(([key]) => key > dateKey(startOfToday))
+    .slice(0, 5);
+
+  const previewPoster = (poster: string) =>
+    window.dispatchEvent(new CustomEvent("watchpath-next-poster", { detail: poster }));
+  const restorePoster = () => previewPoster(nextTitle?.poster || "");
+
+  const renderUnit = (unit: Unit) => (
+    <article
+      className="unit"
+      key={unit.id}
+      onMouseEnter={() => previewPoster(unit.title.poster)}
+      onMouseLeave={restorePoster}
+    >
+      <img src={unit.title.poster} alt="" />
+      <div>
+        <b>{unit.title.name}</b>
+        <span>
+          {unit.season
+            ? `${tx(lang, "season")} ${unit.season} · ${tx(lang, "episode")} ${unit.episode}`
+            : runtime(unit.runtime)}
+        </span>
+      </div>
+      <button type="button" onClick={() => toggle(unit.id)} aria-label={`${unit.title.name} tamamlandı`}>
+        <Check aria-hidden="true" />
+      </button>
+    </article>
+  );
+
+  const renderTitle = (title: Title) => {
+    const watched = titleWatched(title);
+    return (
+      <article
+        className={`card ${watched ? "finished" : ""}`}
+        key={title.id}
+        onMouseEnter={() => previewPoster(title.poster)}
+        onMouseLeave={restorePoster}
+      >
+        <img src={title.poster} alt={`${title.name} afişi`} />
+        <div className="info">
+          <div className="titleRow">
+            <div>
+              <div className={`trackTag track-${title.track}`}>{labels.scopes[title.track]}</div>
+              <h3>{title.name}</h3>
+              <p>
+                {title.year} · {title.type === "series" ? tx(lang, "series") : runtime(title.runtime ?? 120)} · {title.platform}
+              </p>
+            </div>
+            {title.type === "series" && (
+              <button
+                type="button"
+                className="icon"
+                onClick={() => setOpen((current) => ({ ...current, [title.id]: !current[title.id] }))}
+                aria-expanded={Boolean(open[title.id])}
+                aria-label={`${title.name} bölümlerini aç`}
+              >
+                {open[title.id] ? <ChevronDown /> : <ChevronRight />}
+              </button>
+            )}
+          </div>
+
+          {title.type === "movie" ? (
+            <button
+              type="button"
+              className={`watch ${done[title.id] ? "on" : ""}`}
+              onClick={() => toggle(title.id)}
+            >
+              <Check aria-hidden="true" />
+              {done[title.id] ? tx(lang, "watched") : tx(lang, "markWatched")}
+            </button>
+          ) : (
+            <button type="button" className={`watch ${watched ? "on" : ""}`} onClick={() => toggleSeries(title)}>
+              <Check aria-hidden="true" />
+              {watched ? labels.seriesDone : labels.markSeries}
+            </button>
+          )}
+
+          {title.type === "series" && open[title.id] && (
+            <div className="episodes">
+              {(title.seasons ?? []).map((season, seasonIndex) => (
+                <section key={`${title.id}-${seasonIndex + 1}`}>
+                  <b>
+                    {tx(lang, "season")} {seasonIndex + 1}
+                  </b>
+                  {season.map((episode, episodeIndex) => (
+                    <button
+                      type="button"
+                      key={episode.id}
+                      className={done[episode.id] ? "epDone" : ""}
+                      onClick={() => toggle(episode.id)}
+                    >
+                      <span>
+                        {tx(lang, "episode")} {episodeIndex + 1}
+                      </span>
+                      <Check aria-hidden="true" />
+                    </button>
+                  ))}
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
+      </article>
+    );
+  };
+
+  return (
+    <>
+      <AmbientEffects />
+      <ClientTools />
+      <main className="watchpathApp">
+        <header className="topbar">
+          <a className="brandLockup" href="#top" aria-label="Watchpath ana sayfa">
+            <span className="brandMark">W</span>
+            <span>
+              <b>WATCHPATH</b>
+              <small>{tx(lang, "subtitle")}</small>
+            </span>
+          </a>
+          <PresenceBadge lang={lang} />
+        </header>
+
+        <section className="hero" id="top">
+          <div className="heroCopy">
+            <div className="eyebrow"><Sparkles /> {labels.personal}</div>
+            <h1>
+              {labels.headline[0]}
+              <br /> {labels.headline[1]}
+            </h1>
+            <p>
+              {labels.routes[route]} · {selectedTitles.length} {labels.title} · {labels.next} {nextTitle?.name ?? "Doomsday"}
+            </p>
+          </div>
+          <div
+            className="progressOrb"
+            aria-label={`Yüzde ${percentage} tamamlandı`}
+            style={{
+              background: `radial-gradient(circle at center, rgba(17, 18, 24, 0.95) 57%, transparent 59%), conic-gradient(var(--red) 0 ${percentage}%, rgba(255, 255, 255, 0.09) ${percentage}% 100%)`,
+            }}
+          >
+            <strong>{percentage}%</strong>
+            <span>{tx(lang, "complete")}</span>
+          </div>
+          <div className="heroProgress">
+            <div className="bar"><i style={{ width: `${percentage}%` }} /></div>
+            <div className="stats">
+              <span>{completed} / {units.length} {tx(lang, "tasks")}</span>
+              <span>{Math.round(remainingMinutes / 60)} {tx(lang, "hours")}</span>
+            </div>
+          </div>
+        </section>
+
+        <Countdown lang={lang} />
+        <RoadmapExperience lang={lang} />
+
+        {tab === "home" && (
+          <section className="tabSection" aria-label="Bugünün izleme planı">
+            <div className="sectionHeading">
+              <div>
+                <small>{labels.today}</small>
+                <h2>{tx(lang, "today")}</h2>
+              </div>
+              <span>{formatDate(startOfToday)}</span>
+            </div>
+            <p className="muted">{tx(lang, "todayHint")}</p>
+            {todayUnits.length ? (
+              <div className="units">{todayUnits.map(renderUnit)}</div>
+            ) : (
+              <div className="calendarBox compact">
+                <CirclePlay />
+                <h3>{tx(lang, "free")}</h3>
+                <p>{tx(lang, "freeHint")}</p>
+              </div>
+            )}
+
+            <div className="sectionHeading nextHeading">
+              <div>
+                <small>{labels.nextStops}</small>
+                <h2>{tx(lang, "upcoming")}</h2>
+              </div>
+              <span>{daysLeft} {labels.left}</span>
+            </div>
+            {upcoming.map(([key, scheduledUnits]) => (
+              <section className="day" key={key}>
+                <b>{formatDate(new Date(`${key}T12:00:00`))}</b>
+                <div className="units">{scheduledUnits.map(renderUnit)}</div>
+              </section>
+            ))}
+          </section>
+        )}
+
+        {tab === "titles" && (
+          <section className="tabSection" aria-label="Yapım kütüphanesi">
+            <div className="sectionHeading">
+              <div>
+                <small>{allTitles.length} {labels.library}</small>
+                <h2>{tx(lang, "allTitles")}</h2>
+              </div>
+              <span>{filteredTitles.length} {labels.result}</span>
+            </div>
+            <p className="muted">{tx(lang, "allTitlesHint")}</p>
+
+            <div className="libraryTools">
+              <label className="searchBox">
+                <Search aria-hidden="true" />
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={tx(lang, "search")} />
+              </label>
+              <div className="scopeChips" aria-label="Hikâye grubu filtresi">
+                {(Object.keys(labels.scopes) as Scope[]).map((value) => (
+                  <button type="button" className={scope === value ? "active" : ""} key={value} onClick={() => setScope(value)}>
+                    {labels.scopes[value]}
+                  </button>
+                ))}
+              </div>
+              <div className="filterChips" aria-label="Yapım türü filtresi">
+                {(["all", "movie", "series", "watched", "unwatched"] as Filter[]).map((value) => (
+                  <button type="button" className={filter === value ? "active" : ""} key={value} onClick={() => setFilter(value)}>
+                    {tx(
+                      lang,
+                      value === "all"
+                        ? "filterAll"
+                        : value === "movie"
+                          ? "filterMovies"
+                          : value === "series"
+                            ? "filterSeries"
+                            : value === "watched"
+                              ? "filterWatched"
+                              : "filterUnwatched",
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {filteredTitles.length ? (
+              <div className="list">{filteredTitles.map(renderTitle)}</div>
+            ) : (
+              <div className="calendarBox compact"><Search /><h3>{tx(lang, "noResults")}</h3></div>
+            )}
+            <DoomsdayFinale lang={lang} />
+          </section>
+        )}
+
+        {tab === "calendar" && (
+          <section className="tabSection" aria-label="Akıllı izleme takvimi">
+            <div className="sectionHeading">
+              <div>
+                <small>{labels.calendar}</small>
+                <h2>{tx(lang, "smartCalendar")}</h2>
+              </div>
+              <span>{labels.routes[route]}</span>
+            </div>
+            <p className="muted">{tx(lang, "smartCalendarHint")}</p>
+            <div className="calendarSummary">
+              <div><CalendarDays /><span><b>{daysLeft}</b><small>{labels.day}</small></span></div>
+              <div><Film /><span><b>{pending.length}</b><small>{labels.task}</small></span></div>
+              <div><Layers3 /><span><b>{Math.round(remainingMinutes / 60)}</b><small>{labels.hour}</small></span></div>
+            </div>
+            {[...schedule.entries()].slice(0, 40).map(([key, scheduledUnits]) => (
+              <section className="day" key={key}>
+                <b>{formatDate(new Date(`${key}T12:00:00`))}</b>
+                <div className="units">{scheduledUnits.map(renderUnit)}</div>
+              </section>
+            ))}
+          </section>
+        )}
+
+        <nav className="bottomNav" aria-label="Ana bölümler">
+          <button type="button" className={tab === "home" ? "active" : ""} onClick={() => setTab("home")}>
+            <Home />{tx(lang, "today")}
+          </button>
+          <button type="button" className={tab === "titles" ? "active" : ""} onClick={() => setTab("titles")}>
+            <Film />{tx(lang, "titles")}
+          </button>
+          <button type="button" className={tab === "calendar" ? "active" : ""} onClick={() => setTab("calendar")}>
+            <CalendarDays />{tx(lang, "calendar")}
+          </button>
+        </nav>
+      </main>
+    </>
+  );
 }

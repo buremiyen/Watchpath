@@ -1,12 +1,78 @@
-'use client'
+"use client";
 
-import {useState} from 'react'
-import {Github,Instagram,Linkedin,MessageCircle,UserRound,ExternalLink,X,Send,Clapperboard} from 'lucide-react'
+import { useEffect, useState } from "react";
+import {
+  Clapperboard,
+  ExternalLink,
+  Github,
+  Instagram,
+  Linkedin,
+  MessageCircle,
+  UserRound,
+  X,
+} from "lucide-react";
+import FeedbackForm from "./feedback-form";
+import type { Lang } from "./i18n";
 
-export default function SiteFooter(){
- const[feedback,setFeedback]=useState(false);const[name,setName]=useState('');const[subject,setSubject]=useState('');const[msg,setMsg]=useState('')
- const send=(e:React.FormEvent)=>{e.preventDefault();const body=`Gönderen: ${name}\n\n${msg}`;location.href=`mailto:buremiyen@gmail.com?subject=${encodeURIComponent('[Watchpath] '+subject)}&body=${encodeURIComponent(body)}`}
- return <><footer className="siteFooterNew"><div className="footerTop"><div className="footerBrand"><b>WATCHPATH</b><span>Kişisel film maratonlarını planla, takip et ve bitir.</span></div><div className="footerMenu"><a href="/about"><UserRound/>Hakkımda</a><button onClick={()=>setFeedback(true)}><MessageCircle/>Geri bildirim</button><a href="/marathons" className="marathonLink"><Clapperboard/>Diğer maratonlar</a></div><div className="socials"><a href="https://github.com/buremiyen" target="_blank" rel="noreferrer" title="GitHub"><Github/></a><a href="https://instagram.com/byenier.art" target="_blank" rel="noreferrer" title="Instagram"><Instagram/></a><a href="https://www.behance.net/burhanyenier" target="_blank" rel="noreferrer" title="Behance"><b>Bē</b></a><a href="https://www.linkedin.com/in/buremiyen" target="_blank" rel="noreferrer" title="LinkedIn"><Linkedin/></a></div></div><div className="footerBottom"><span>© 2026 Watchpath · Buremiye</span><a href="https://github.com/buremiyen/Watchpath" target="_blank" rel="noreferrer">Açık kaynak <ExternalLink/></a></div></footer>
- {feedback&&<div className="feedbackBack" onMouseDown={e=>{if(e.target===e.currentTarget)setFeedback(false)}}><form className="feedbackGlass" onSubmit={send}><button type="button" className="close" onClick={()=>setFeedback(false)}><X/></button><small>WATCHPATH</small><h2>Geri bildirim gönder</h2><p>Fikrini, hatayı ya da görmek istediğin özelliği yaz. Gönder dediğinde e-posta uygulaman hazır mesajla açılır.</p><label>Adın<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Adın"/></label><label>Konu<input required value={subject} onChange={e=>setSubject(e.target.value)} placeholder="Örn. Yeni maraton önerisi"/></label><label>Mesajın<textarea required value={msg} onChange={e=>setMsg(e.target.value)} placeholder="Ne ekleyelim veya neyi düzeltelim?"/></label><button className="send"><Send/>E-posta ile gönder</button></form></div>}
- <style jsx>{`.siteFooterNew{width:min(1040px,calc(100% - 28px));margin:40px auto 115px;padding:24px;border:1px solid rgba(255,255,255,.14);border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.085),rgba(255,255,255,.025));backdrop-filter:blur(28px) saturate(160%);box-shadow:inset 0 1px rgba(255,255,255,.14),0 24px 70px rgba(0,0,0,.3)}.footerTop{display:grid;grid-template-columns:1.3fr 1fr auto;gap:24px;align-items:center}.footerBrand b{font-size:18px;letter-spacing:.13em}.footerBrand span{display:block;color:#858995;font-size:11px;margin-top:6px}.footerMenu{display:flex;flex-wrap:wrap;gap:8px}.footerMenu a,.footerMenu button{border:0;background:transparent;color:#a9acb5;text-decoration:none;font-size:10px;display:flex;align-items:center;gap:6px;padding:8px}.footerMenu .marathonLink{padding:10px 12px;border:1px solid rgba(255,105,124,.25);border-radius:12px;background:rgba(150,28,47,.18);color:#ff8995;font-weight:800}.footerMenu :global(svg){width:14px}.socials{display:flex;gap:7px}.socials a{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.045);color:#d9dae0;text-decoration:none;transition:.18s}.socials a:hover{transform:translateY(-3px);border-color:rgba(255,100,120,.38)}.socials :global(svg){width:16px}.socials b{font-size:13px}.footerBottom{border-top:1px solid rgba(255,255,255,.08);margin-top:20px;padding-top:14px;display:flex;justify-content:space-between;color:#70737d;font-size:9px}.footerBottom a{color:#8c9099;text-decoration:none;display:flex;gap:5px;align-items:center}.footerBottom :global(svg){width:11px}.feedbackBack{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.68);display:grid;place-items:center;padding:18px;backdrop-filter:blur(12px)}.feedbackGlass{width:min(520px,100%);position:relative;padding:28px;border-radius:28px;border:1px solid rgba(255,255,255,.17);background:linear-gradient(145deg,rgba(28,29,38,.92),rgba(12,13,18,.92));box-shadow:0 35px 100px #000}.feedbackGlass>small{color:#ff6e7f;letter-spacing:.2em}.feedbackGlass h2{font-size:26px;margin:7px 0}.feedbackGlass p{color:#9397a1;font-size:12px;line-height:1.6}.feedbackGlass label{display:grid;gap:6px;color:#a6a9b2;font-size:10px;margin:14px 0}.feedbackGlass input,.feedbackGlass textarea{width:100%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;border-radius:13px;padding:12px;outline:none}.feedbackGlass textarea{height:120px;resize:vertical}.close{position:absolute;right:14px;top:14px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.07);color:#aaa}.close :global(svg),.send :global(svg){width:16px}.send{width:100%;height:46px;border:0;border-radius:14px;background:#e63e55;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800}@media(max-width:760px){.footerTop{grid-template-columns:1fr}.socials{justify-content:flex-start}.footerBottom{gap:10px;flex-wrap:wrap}.siteFooterNew{margin-bottom:105px}}`}</style></>
+const labels = {
+  tr: { tagline: "Kişisel film maratonlarını planla, takip et ve bitir.", about: "Hakkımda", feedback: "Geri bildirim", marathons: "Diğer maratonlar", open: "Açık kaynak", title: "Geri bildirim gönder", intro: "Fikrini, hatayı ya da görmek istediğin özelliği yaz." },
+  en: { tagline: "Plan, track and finish personal movie marathons.", about: "About", feedback: "Feedback", marathons: "Other marathons", open: "Open source", title: "Send feedback", intro: "Share an idea, a bug or a feature you would like to see." },
+  de: { tagline: "Plane, verfolge und beende persönliche Film-Marathons.", about: "Über mich", feedback: "Feedback", marathons: "Weitere Marathons", open: "Open Source", title: "Feedback senden", intro: "Teile eine Idee, einen Fehler oder einen Funktionswunsch." },
+  es: { tagline: "Planifica, sigue y termina maratones de cine personales.", about: "Acerca de", feedback: "Comentarios", marathons: "Otros maratones", open: "Código abierto", title: "Enviar comentarios", intro: "Comparte una idea, un error o una función que quieras ver." },
+  fr: { tagline: "Planifie, suis et termine tes marathons personnels.", about: "À propos", feedback: "Avis", marathons: "Autres marathons", open: "Open source", title: "Envoyer un avis", intro: "Partage une idée, un bug ou une fonctionnalité souhaitée." },
+  ja: { tagline: "自分だけの映画マラソンを計画・記録・完走。", about: "このサイトについて", feedback: "フィードバック", marathons: "ほかのマラソン", open: "オープンソース", title: "フィードバックを送る", intro: "アイデア、不具合、追加してほしい機能を送ってください。" },
+} as const;
+
+export default function SiteFooter() {
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [lang, setLang] = useState<Lang>("tr");
+  const copy = labels[lang];
+
+  useEffect(() => {
+    const saved = (localStorage.getItem("watchpath-lang") || "tr") as Lang;
+    if (saved in labels) setLang(saved);
+    const handler = (event: Event) => setLang((event as CustomEvent<Lang>).detail);
+    window.addEventListener("watchpath-language", handler);
+    return () => window.removeEventListener("watchpath-language", handler);
+  }, []);
+
+  return (
+    <>
+      <footer className="siteFooterNew">
+        <div className="footerTop">
+          <div className="footerBrand">
+            <b>WATCHPATH</b>
+            <span>{copy.tagline}</span>
+          </div>
+          <div className="footerMenu">
+            <a href="/about"><UserRound />{copy.about}</a>
+            <button type="button" onClick={() => setFeedbackOpen(true)}><MessageCircle />{copy.feedback}</button>
+            <a href="/marathons" className="marathonLink"><Clapperboard />{copy.marathons}</a>
+          </div>
+          <div className="socials" aria-label="Sosyal medya hesapları">
+            <a href="https://github.com/buremiyen" target="_blank" rel="noreferrer" title="GitHub"><Github /></a>
+            <a href="https://instagram.com/byenier.art" target="_blank" rel="noreferrer" title="Instagram"><Instagram /></a>
+            <a href="https://www.behance.net/burhanyenier" target="_blank" rel="noreferrer" title="Behance"><b>Bē</b></a>
+            <a href="https://www.linkedin.com/in/buremiyen" target="_blank" rel="noreferrer" title="LinkedIn"><Linkedin /></a>
+          </div>
+        </div>
+        <div className="footerBottom">
+          <span>© 2026 Watchpath · Buremiye</span>
+          <a href="https://github.com/buremiyen/Watchpath" target="_blank" rel="noreferrer">{copy.open} <ExternalLink /></a>
+        </div>
+      </footer>
+
+      {feedbackOpen && (
+        <div className="feedbackBack" onMouseDown={(event) => event.target === event.currentTarget && setFeedbackOpen(false)}>
+          <section className="feedbackGlass" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+            <button type="button" className="close" onClick={() => setFeedbackOpen(false)} aria-label="Geri bildirim penceresini kapat"><X /></button>
+            <small>WATCHPATH</small>
+            <h2 id="feedback-title">{copy.title}</h2>
+            <p>{copy.intro}</p>
+            <FeedbackForm compact lang={lang} />
+          </section>
+        </div>
+      )}
+    </>
+  );
 }
