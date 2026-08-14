@@ -5,6 +5,7 @@ import { CalendarDays, ExternalLink, Play, Sparkles, Trophy } from "lucide-react
 import type { Lang } from "./i18n";
 
 const poster = (path: string) => `https://image.tmdb.org/t/p/w185${path}`;
+const DOOMSDAY_POSTER = "https://image.tmdb.org/t/p/original/6eB2oh1SplddsZYCdayrIdrIGLd.jpg";
 
 const branches = [
   {
@@ -74,6 +75,8 @@ const labels = {
 export default function DoomsdayFinale({ lang }: { lang: Lang }) {
   const [complete, setComplete] = useState(false);
   const copy = labels[lang];
+  const previewPoster = (source: string) =>
+    window.dispatchEvent(new CustomEvent("watchpath-next-poster", { detail: source }));
 
   useEffect(() => {
     const check = () => {
@@ -100,8 +103,13 @@ export default function DoomsdayFinale({ lang }: { lang: Lang }) {
             <article className="branch" key={branch.name}>
               <b>{branch.name}</b>
               {branch.items.map(([title, image]) => (
-                <div className="movieNode" key={title}>
-                  <img src={poster(image)} alt="" />
+                <div
+                  className="movieNode"
+                  key={title}
+                  onPointerEnter={() => previewPoster(poster(image))}
+                  onPointerLeave={() => previewPoster(DOOMSDAY_POSTER)}
+                >
+                  <img src={poster(image)} alt="" loading="lazy" decoding="async" />
                   <span>{title}</span>
                 </div>
               ))}
@@ -112,10 +120,15 @@ export default function DoomsdayFinale({ lang }: { lang: Lang }) {
       </div>
 
       <article className="doomsdayGlass">
-        <div className="poster">
+        <div
+          className="poster"
+          onPointerEnter={() => previewPoster(DOOMSDAY_POSTER)}
+        >
           <img
-            src="https://image.tmdb.org/t/p/original/6eB2oh1SplddsZYCdayrIdrIGLd.jpg"
+            src={DOOMSDAY_POSTER}
             alt="Avengers: Doomsday afişi"
+            loading="lazy"
+            decoding="async"
           />
         </div>
         <div className="copy">

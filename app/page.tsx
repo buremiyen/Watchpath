@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   Check,
@@ -58,6 +58,7 @@ export default function Page() {
   const [filter, setFilter] = useState<Filter>("all");
   const [scope, setScope] = useState<Scope>("all");
   const [route, setRoute] = useState<RouteMode>("balanced");
+  const deferredQuery = useDeferredValue(query);
   const labels = pageLabels[lang];
 
   useEffect(() => {
@@ -159,7 +160,7 @@ export default function Page() {
   };
 
   const filteredTitles = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase(localeFor(lang));
+    const normalizedQuery = deferredQuery.trim().toLocaleLowerCase(localeFor(lang));
     return allTitles.filter((title) => {
       const watched = titleWatched(title);
       const matchesQuery = title.name.toLocaleLowerCase(localeFor(lang)).includes(normalizedQuery);
@@ -171,7 +172,7 @@ export default function Page() {
         (filter === "unwatched" && !watched);
       return matchesQuery && matchesScope && matchesFilter;
     });
-  }, [done, filter, lang, query, scope]);
+  }, [deferredQuery, done, filter, lang, scope]);
 
   const runtime = (minutes: number) =>
     `${Math.floor(minutes / 60)}${tx(lang, "hourShort")} ${minutes % 60}${tx(
@@ -198,10 +199,11 @@ export default function Page() {
     <article
       className="unit"
       key={unit.id}
-      onMouseEnter={() => previewPoster(unit.title.poster)}
-      onMouseLeave={restorePoster}
+      onPointerEnter={() => previewPoster(unit.title.poster)}
+      onPointerLeave={restorePoster}
+      onFocus={() => previewPoster(unit.title.poster)}
     >
-      <img src={unit.title.poster} alt="" />
+      <img src={unit.title.poster} alt="" loading="lazy" decoding="async" />
       <div>
         <b>{unit.title.name}</b>
         <span>
@@ -222,10 +224,16 @@ export default function Page() {
       <article
         className={`card ${watched ? "finished" : ""}`}
         key={title.id}
-        onMouseEnter={() => previewPoster(title.poster)}
-        onMouseLeave={restorePoster}
+        onPointerEnter={() => previewPoster(title.poster)}
+        onPointerLeave={restorePoster}
+        onFocus={() => previewPoster(title.poster)}
       >
-        <img src={title.poster} alt={`${title.name} afişi`} />
+        <img
+          src={title.poster}
+          alt={`${title.name} afişi`}
+          loading="lazy"
+          decoding="async"
+        />
         <div className="info">
           <div className="titleRow">
             <div>
