@@ -7,10 +7,10 @@ import type { Lang } from "./i18n";
 const PRESENCE_KEY = "watchpath-presence-id";
 
 function getPresenceId() {
-  const existing = localStorage.getItem(PRESENCE_KEY);
+  const existing = sessionStorage.getItem(PRESENCE_KEY);
   if (existing) return existing;
   const id = crypto.randomUUID();
-  localStorage.setItem(PRESENCE_KEY, id);
+  sessionStorage.setItem(PRESENCE_KEY, id);
   return id;
 }
 
@@ -31,13 +31,32 @@ export default function PresenceBadge({ lang }: { lang: Lang }) {
     const presenceId = getPresenceId();
     let active = true;
 
+    const sendLeave = () => {
+      active = false;
+      const body = JSON.stringify({ presenceId, action: "leave" });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(
+          "/api/presence",
+          new Blob([body], { type: "application/json" }),
+        );
+        return;
+      }
+
+      void fetch("/api/presence", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+        keepalive: true,
+      });
+    };
+
     const heartbeat = async () => {
       if (document.visibilityState === "hidden") return;
       try {
         const response = await fetch("/api/presence", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ presenceId }),
+          body: JSON.stringify({ presenceId, action: "heartbeat" }),
           cache: "no-store",
         });
         if (!response.ok) return;
@@ -49,19 +68,21 @@ export default function PresenceBadge({ lang }: { lang: Lang }) {
     };
 
     void heartbeat();
-    const timer = window.setInterval(heartbeat, 25_000);
+    const timer = window.setInterval(heartbeat, 10_000);
     const onVisibility = () => void heartbeat();
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", sendLeave);
 
     return () => {
-      active = false;
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", sendLeave);
+      sendLeave();
     };
   }, []);
 
   return (
-    <div className="presenceBadge" aria-live="polite" title="Son 90 saniyede aktif olan ziyaretçiler">
+    <div className="presenceBadge" aria-live="polite" title="Şu anda aktif olan ziyaretçiler">
       <i aria-hidden="true" />
       <UsersRound aria-hidden="true" />
       <span>{count === null ? copy.loading : `${count} ${copy.online}`}</span>
