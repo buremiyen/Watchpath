@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Script from "next/script";
 import "./globals.css";
 import "./editorial.css";
+import "./mobile-fixes.css";
 import AdSlots from "./ad-slots";
 import SiteFooter from "./site-footer";
 
