@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
 import "./globals.css";
+import "./editorial.css";
 import AdSlots from "./ad-slots";
 import SiteFooter from "./site-footer";
 
@@ -12,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "Watchpath — Avengers: Doomsday Maraton Planlayıcısı";
+  const title = "Watchpath | Avengers: Doomsday Maraton Planlayıcısı";
   const description =
     "Doomsday'e kadar kalan zamanda Marvel maratonunu planla, izlediklerini işaretle ve akıllı takvimini otomatik güncelle.";
 
@@ -38,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#090a10",
+  themeColor: "#111315",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
