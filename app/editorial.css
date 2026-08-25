@@ -1,0 +1,340 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --wp-red: #c8102e;
+  --wp-bg: #111315;
+  --wp-panel: #191c1f;
+  --wp-panel-2: #202428;
+  --wp-line: #3b4147;
+  --wp-text: #f2efe9;
+  --wp-muted: #a7a39d;
+  --wp-faint: #74716d;
+  --wp-radius: 10px;
+}
+
+html, body { background: var(--wp-bg) !important; }
+body {
+  color: var(--wp-text) !important;
+  font-family: "IBM Plex Sans", Arial, sans-serif !important;
+  background-image: none !important;
+}
+
+/* Lucide and decorative SVG icons are intentionally removed from the visual language. */
+body svg:not(.brandMark) { display: none !important; }
+
+* { box-shadow: none !important; }
+.hero, .countdownPanel, .card, .unit, .calendarBox, .calendarSummary,
+.libraryTools, .treeGlass, .doomsdayGlass, .celebrate, .clientTools .toolMain,
+.bottomNav, .routeDock, .marathonHub, .presenceBadge, .siteFooterNew,
+.feedbackGlass, .feedbackBack, .countdownCell, .searchBox, .filterChips button,
+.scopeChips button, .watch, .icon, .reset, .routeOptions button, .socials a,
+.footerMenu a, .footerMenu button {
+  border-radius: var(--wp-radius) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-image: none !important;
+}
+
+.posterBackdrop { opacity: 1 !important; background: var(--wp-bg) !important; }
+.posterLayer {
+  filter: saturate(.72) contrast(1.05) brightness(.38) !important;
+  opacity: .32 !important;
+  transform: translate3d(var(--depth-x), var(--depth-y), 0) scale(1.03) !important;
+}
+.posterLayer.previous { opacity: .12 !important; }
+.posterLayer.current { opacity: .32 !important; animation: none !important; }
+.posterVeil { background: rgba(17,19,21,.72) !important; }
+.posterGrain, .cursorGlow { display: none !important; }
+
+.watchpathApp {
+  width: min(1080px, 100%) !important;
+  padding: 26px 24px 150px !important;
+}
+
+.topbar {
+  margin: 0 0 18px !important;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--wp-line);
+}
+.brandLockup { gap: 12px !important; }
+.brandLockup b,
+.hero h1,
+.sectionHeading h2,
+.doomsdayGlass h1,
+.doomsdayGlass h3,
+.treeGlass h2,
+.siteFooterNew .footerBrand b {
+  font-family: "Archivo Black", Impact, sans-serif !important;
+}
+.brandLockup b { font-size: 18px !important; letter-spacing: .05em !important; }
+.brandLockup small { color: var(--wp-muted) !important; font-size: 9px !important; letter-spacing: .08em !important; }
+.brandMark { filter: none !important; transform: none !important; }
+
+.presenceBadge {
+  min-height: 34px !important;
+  padding: 7px 10px !important;
+  border: 1px solid var(--wp-line) !important;
+  background: var(--wp-panel) !important;
+  color: var(--wp-muted) !important;
+  font-size: 10px !important;
+}
+.presenceBadge i {
+  width: 7px !important;
+  height: 7px !important;
+  background: #7fa47d !important;
+  border-radius: 50% !important;
+  animation: none !important;
+}
+
+.hero {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 210px !important;
+  gap: 24px !important;
+  padding: 34px 0 28px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--wp-line) !important;
+  background: transparent !important;
+  overflow: visible !important;
+  transform: none !important;
+  animation: none !important;
+}
+.hero::before, .hero::after { display: none !important; }
+.heroCopy, .progressOrb, .heroProgress { transform: none !important; }
+.eyebrow {
+  color: var(--wp-red) !important;
+  font-size: 9px !important;
+  letter-spacing: .13em !important;
+}
+.hero h1 {
+  margin: 10px 0 12px !important;
+  max-width: 720px !important;
+  font-size: clamp(40px, 7vw, 74px) !important;
+  line-height: .95 !important;
+  letter-spacing: -.035em !important;
+  text-transform: uppercase;
+}
+.heroCopy > p { color: var(--wp-muted) !important; font-size: 12px !important; }
+.progressOrb {
+  width: auto !important;
+  aspect-ratio: auto !important;
+  padding: 18px !important;
+  display: block !important;
+  text-align: left !important;
+  border: 1px solid var(--wp-line) !important;
+  background: var(--wp-panel) !important;
+}
+.progressOrb strong { display: block; font-family: "Archivo Black", Impact, sans-serif; font-size: 42px !important; }
+.progressOrb span { color: var(--wp-muted) !important; font-size: 9px !important; }
+.heroProgress { grid-column: 1 / -1 !important; }
+.bar { height: 5px !important; border-radius: 0 !important; background: #34383d !important; }
+.bar i { border-radius: 0 !important; background: var(--wp-red) !important; }
+.bar i::after { display: none !important; }
+.stats { color: var(--wp-muted) !important; font-size: 10px !important; }
+
+.countdownPanel {
+  margin-top: 18px !important;
+  padding: 16px 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--wp-line) !important;
+  background: transparent !important;
+  animation: none !important;
+}
+.countdownCopy small { color: var(--wp-red) !important; }
+.countdownCopy strong { font-size: 15px !important; }
+.countdownCopy span { color: var(--wp-muted) !important; }
+.countdownGrid { gap: 5px !important; }
+.countdownCell {
+  min-width: 72px !important;
+  padding: 10px 8px !important;
+  border: 1px solid var(--wp-line) !important;
+  background: var(--wp-panel) !important;
+}
+.countdownCell b { font-family: "Archivo Black", Impact, sans-serif; font-size: 22px !important; }
+.countdownCell span { color: var(--wp-muted) !important; }
+
+.routeDockWrap {
+  margin: 18px 0 28px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) minmax(0,1.4fr) !important;
+  gap: 12px !important;
+  animation: none !important;
+}
+.marathonHub {
+  display: flex !important;
+  align-items: center !important;
+  padding: 14px 16px !important;
+  border: 1px solid var(--wp-line) !important;
+  background: var(--wp-panel) !important;
+  text-decoration: none;
+}
+.marathonHub span { display: block !important; }
+.marathonHub small { color: var(--wp-red) !important; font-size: 8px !important; }
+.marathonHub b { display:block; margin-top:3px; font-size: 13px !important; }
+.marathonHub em { color: var(--wp-muted) !important; font-size: 9px !important; font-style: normal !important; }
+.routeDock {
+  padding: 12px 14px !important;
+  border: 1px solid var(--wp-line) !important;
+  background: var(--wp-panel) !important;
+}
+.routeTitle span { color: var(--wp-red) !important; font-size: 8px !important; }
+.routeTitle b { font-size: 12px !important; }
+.routeOptions {
+  display: flex !important;
+  gap: 18px !important;
+  align-items: center !important;
+  margin-top: 10px !important;
+}
+.routeOptions button {
+  padding: 6px 0 !important;
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  background: transparent !important;
+  color: var(--wp-muted) !important;
+}
+.routeOptions button.active { color: var(--wp-text) !important; border-bottom-color: var(--wp-red) !important; }
+.routeOptions button small { color: var(--wp-faint) !important; }
+.reset {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--wp-muted) !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tabSection { position: relative; padding-left: 54px !important; }
+.tabSection::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 8px;
+  bottom: 18px;
+  width: 1px;
+  background: var(--wp-line);
+}
+.sectionHeading { margin-top: 28px !important; }
+.sectionHeading small { color: var(--wp-red) !important; letter-spacing: .12em !important; }
+.sectionHeading h2 { font-size: clamp(26px,4vw,42px) !important; text-transform: uppercase; }
+.sectionHeading > span { color: var(--wp-muted) !important; }
+.muted { color: var(--wp-muted) !important; }
+
+.units, .list { display: grid !important; gap: 8px !important; }
+.unit, .card {
+  position: relative;
+  border: 1px solid var(--wp-line) !important;
+  background: rgba(25,28,31,.94) !important;
+  overflow: hidden;
+  content-visibility: auto;
+}
+.unit::before, .card::before {
+  content: "";
+  position: absolute;
+  left: -40px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  background: var(--wp-bg);
+  border: 2px solid var(--wp-red);
+  border-radius: 50%;
+}
+.unit { min-height: 92px !important; }
+.unit img { width: 62px !important; height: 92px !important; object-fit: cover !important; }
+.unit b, .card h3 { color: var(--wp-text) !important; }
+.unit span, .card p { color: var(--wp-muted) !important; }
+.card > img { width: 96px !important; min-height: 142px !important; object-fit: cover !important; }
+.card.finished { opacity: .58 !important; }
+.card.finished::after { content: "İZLENDİ"; position:absolute; right:12px; top:10px; color:var(--wp-red); font-size:8px; font-weight:700; letter-spacing:.1em; }
+.watch {
+  border: 1px solid var(--wp-line) !important;
+  background: transparent !important;
+  color: var(--wp-text) !important;
+  padding: 8px 12px !important;
+}
+.watch.on { border-color: var(--wp-red) !important; color: var(--wp-red) !important; }
+
+.libraryTools {
+  padding: 12px !important;
+  border: 1px solid var(--wp-line) !important;
+  background: var(--wp-panel) !important;
+}
+.searchBox { border: 1px solid var(--wp-line) !important; background: var(--wp-bg) !important; }
+.searchBox input { color: var(--wp-text) !important; }
+.scopeChips, .filterChips { display:flex !important; flex-wrap: wrap !important; gap: 6px !important; }
+.scopeChips button, .filterChips button {
+  border: 1px solid var(--wp-line) !important;
+  background: transparent !important;
+  color: var(--wp-muted) !important;
+}
+.scopeChips button.active, .filterChips button.active { border-color: var(--wp-red) !important; color: var(--wp-text) !important; }
+
+.calendarSummary { border: 1px solid var(--wp-line) !important; background: var(--wp-panel) !important; }
+.calendarSummary > div { border-right: 1px solid var(--wp-line); }
+.calendarSummary > div:last-child { border-right: 0; }
+.calendarBox { border: 1px solid var(--wp-line) !important; background: var(--wp-panel) !important; }
+.day { border-left: 3px solid var(--wp-red) !important; padding-left: 14px !important; }
+
+.bottomNav {
+  border: 1px solid var(--wp-line) !important;
+  background: #141719 !important;
+  padding: 6px !important;
+}
+.bottomNav button {
+  border-radius: var(--wp-radius) !important;
+  background: transparent !important;
+  color: var(--wp-muted) !important;
+}
+.bottomNav button.active { background: var(--wp-panel-2) !important; color: var(--wp-text) !important; border-bottom: 2px solid var(--wp-red) !important; }
+
+.treeGlass, .doomsdayGlass {
+  border: 1px solid var(--wp-line) !important;
+  background: rgba(25,28,31,.96) !important;
+}
+.treeGlass h2, .doomsdayGlass h1, .doomsdayGlass h3 { text-transform: uppercase; }
+.movieNode { border-radius: var(--wp-radius) !important; border: 1px solid var(--wp-line) !important; background: var(--wp-bg) !important; }
+.doomsdayGlass .poster img { object-fit: contain !important; background: #0e1012 !important; }
+.doomsdayGlass .badge { color: var(--wp-red) !important; background: transparent !important; border: 1px solid var(--wp-red) !important; border-radius: var(--wp-radius) !important; }
+.doomsdayGlass .date { border: 1px solid var(--wp-line) !important; background: var(--wp-bg) !important; border-radius: var(--wp-radius) !important; }
+.doomsdayGlass .actions button { border: 1px solid var(--wp-line) !important; background: transparent !important; color: var(--wp-text) !important; border-radius: var(--wp-radius) !important; }
+.doomsdayGlass .actions button:first-child { border-color: var(--wp-red) !important; }
+
+.siteFooterNew {
+  width: min(1080px, calc(100% - 48px)) !important;
+  margin: 42px auto 100px !important;
+  padding: 22px 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--wp-line) !important;
+  background: transparent !important;
+}
+.footerTop { align-items: start !important; }
+.footerBrand span, .footerBottom { color: var(--wp-muted) !important; }
+.footerMenu { display:flex !important; flex-wrap: wrap !important; gap: 8px 16px !important; }
+.footerMenu a, .footerMenu button, .socials a {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  color: var(--wp-text) !important;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.socials { display:flex !important; gap:12px !important; }
+.footerBottom { border-top: 1px solid var(--wp-line) !important; padding-top: 14px !important; }
+
+.feedbackBack { background: rgba(17,19,21,.9) !important; }
+.feedbackGlass { border: 1px solid var(--wp-line) !important; background: var(--wp-panel) !important; }
+
+@media (max-width: 760px) {
+  .watchpathApp { padding: 16px 14px 132px !important; }
+  .hero { grid-template-columns: 1fr !important; padding-top: 24px !important; }
+  .progressOrb { width: 100% !important; }
+  .routeDockWrap { grid-template-columns: 1fr !important; }
+  .routeOptions { gap: 12px !important; overflow-x: auto; }
+  .countdownPanel { grid-template-columns: 1fr !important; }
+  .countdownGrid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .countdownCell { min-width: 0 !important; }
+  .tabSection { padding-left: 30px !important; }
+  .tabSection::before { left: 9px !important; }
+  .unit::before, .card::before { left: -26px !important; }
+  .card { grid-template-columns: 78px minmax(0,1fr) !important; }
+  .card > img { width: 78px !important; min-height: 118px !important; }
+  .siteFooterNew { width: calc(100% - 28px) !important; }
+}
