@@ -1,0 +1,255 @@
+/* Mobile-only production fixes. Loaded after the editorial layer. */
+@media (max-width: 760px) {
+  html, body { width: 100%; overflow-x: hidden !important; }
+  body { min-width: 0 !important; }
+
+  .watchpathApp {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px 12px calc(112px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .clientTools {
+    position: static !important;
+    width: calc(100% - 24px) !important;
+    margin: 10px auto 0 !important;
+    padding: 0 !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+  }
+  .clientTools .toolMain { min-width: 0 !important; max-width: 100% !important; }
+  .langDropdown { right: 0 !important; left: auto !important; max-width: calc(100vw - 24px) !important; }
+
+  .topbar {
+    gap: 10px !important;
+    align-items: center !important;
+    margin-bottom: 8px !important;
+  }
+  .brandLockup { min-width: 0 !important; }
+  .brandLockup span { min-width: 0 !important; }
+  .brandLockup small { white-space: normal !important; line-height: 1.25 !important; }
+  .presenceBadge {
+    flex: 0 1 auto !important;
+    max-width: 44vw !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .hero {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 22px 0 20px !important;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 11vw, 54px) !important;
+    line-height: .96 !important;
+    overflow-wrap: anywhere !important;
+  }
+  .heroCopy > p { max-width: none !important; }
+  .progressOrb {
+    position: static !important;
+    width: 100% !important;
+    padding: 14px !important;
+  }
+  .heroProgress {
+    padding-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .countdownPanel {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 14px 0 !important;
+  }
+  .countdownCopy { padding-left: 0 !important; }
+  .countdownGrid {
+    width: 100% !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+  }
+  .countdownCell {
+    min-width: 0 !important;
+    padding: 8px 2px !important;
+  }
+  .countdownCell b { font-size: clamp(16px, 6vw, 22px) !important; }
+  .countdownCell span { font-size: 6px !important; letter-spacing: .03em !important; }
+
+  .routeDockWrap {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin: 14px 0 22px !important;
+  }
+  .marathonHub {
+    display: block !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+  .marathonHub em { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  .routeDock {
+    display: block !important;
+    padding: 12px !important;
+  }
+  .routeTitle { padding-right: 0 !important; }
+  .routeOptions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    overflow: visible !important;
+    margin-top: 10px !important;
+  }
+  .routeOptions button {
+    min-width: 0 !important;
+    height: auto !important;
+    justify-content: center !important;
+    padding: 8px 3px !important;
+    text-align: center !important;
+  }
+  .routeOptions button > span { min-width: 0 !important; text-align: center !important; }
+  .routeOptions b { font-size: 8px !important; overflow-wrap: anywhere !important; }
+  .routeOptions small { font-size: 6px !important; }
+  .reset {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin-top: 8px !important;
+    padding: 6px 0 !important;
+  }
+  .reset span { display: inline !important; }
+
+  .tabSection {
+    margin-top: 24px !important;
+    padding-left: 24px !important;
+  }
+  .tabSection::before { left: 6px !important; }
+  .unit::before, .card::before { left: -23px !important; }
+  .sectionHeading {
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  .sectionHeading h2 { font-size: clamp(24px, 8vw, 34px) !important; }
+  .sectionHeading > span { max-width: 42%; font-size: 8px !important; }
+
+  .unit {
+    display: grid !important;
+    grid-template-columns: 54px minmax(0, 1fr) 38px !important;
+    gap: 9px !important;
+    min-width: 0 !important;
+    padding: 7px !important;
+  }
+  .unit img { width: 54px !important; height: 78px !important; }
+  .unit > div { min-width: 0 !important; }
+  .unit b { overflow-wrap: anywhere !important; }
+  .unit button { width: 34px !important; height: 34px !important; }
+
+  .card {
+    display: grid !important;
+    grid-template-columns: 76px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    min-width: 0 !important;
+    padding: 8px !important;
+  }
+  .card > img {
+    width: 76px !important;
+    height: 114px !important;
+    min-height: 0 !important;
+  }
+  .card .info, .titleRow > div { min-width: 0 !important; }
+  .titleRow { gap: 6px !important; }
+  .titleRow h3 {
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+    overflow-wrap: anywhere !important;
+  }
+  .titleRow p { font-size: 8px !important; }
+  .watch {
+    max-width: 100% !important;
+    margin-top: 10px !important;
+    padding: 7px 8px !important;
+    white-space: normal !important;
+  }
+  .episodes button { gap: 6px !important; }
+
+  .libraryTools {
+    position: static !important;
+    top: auto !important;
+    margin: 12px 0 14px !important;
+    padding: 8px !important;
+  }
+  .scopeChips, .filterChips {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .calendarSummary {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    padding: 0 !important;
+  }
+  .calendarSummary > div {
+    min-height: 54px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--wp-line) !important;
+  }
+  .calendarSummary > div:last-child { border-bottom: 0 !important; }
+
+  .tree { grid-template-columns: 1fr !important; }
+  .treeGlass, .doomsdayGlass, .celebrate { padding: 14px !important; }
+  .doomsdayGlass {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+  .doomsdayGlass .poster {
+    width: min(100%, 360px) !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+  .copy h1 { font-size: clamp(42px, 15vw, 62px) !important; }
+  .copy h3 { letter-spacing: .12em !important; }
+  .copy .date { width: 100% !important; }
+  .actions { display: grid !important; grid-template-columns: 1fr !important; }
+  .actions button { width: 100% !important; justify-content: center !important; }
+
+  .bottomNav {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 62px !important;
+  }
+  .bottomNav button { min-width: 0 !important; font-size: 9px !important; }
+
+  .siteFooterNew {
+    width: calc(100% - 24px) !important;
+    margin: 32px auto calc(92px + env(safe-area-inset-bottom)) !important;
+    padding: 18px 0 !important;
+  }
+  .footerTop { grid-template-columns: 1fr !important; gap: 18px !important; }
+  .footerMenu, .socials { gap: 10px 14px !important; }
+  .footerBottom { flex-direction: column !important; gap: 8px !important; align-items: flex-start !important; }
+
+  .feedbackBack { padding: 10px !important; }
+  .feedbackGlass {
+    width: 100% !important;
+    max-height: calc(100dvh - 20px) !important;
+    padding: 20px 16px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .watchpathApp { padding-inline: 9px !important; }
+  .brandLockup small { display: none !important; }
+  .presenceBadge { max-width: 46vw !important; font-size: 9px !important; }
+  .routeOptions { grid-template-columns: 1fr !important; }
+  .routeOptions button { text-align: left !important; justify-content: flex-start !important; }
+  .routeOptions button > span { text-align: left !important; }
+  .countdownCell span { font-size: 5px !important; }
+  .tabSection { padding-left: 20px !important; }
+  .card { grid-template-columns: 68px minmax(0,1fr) !important; }
+  .card > img { width: 68px !important; height: 102px !important; }
+  .unit { grid-template-columns: 48px minmax(0,1fr) 34px !important; }
+  .unit img { width: 48px !important; height: 70px !important; }
+}
